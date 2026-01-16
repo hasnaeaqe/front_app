@@ -4,6 +4,8 @@ const authService = {
   login: async (email, password) => {
     const response = await api.post('/auth/login', { email, password });
     if (response.data.token) {
+      // Note: En production, considérer l'utilisation de httpOnly cookies pour plus de sécurité
+      // localStorage est vulnérable aux attaques XSS
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data));
     }

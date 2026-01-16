@@ -23,10 +23,12 @@ api.interceptors.response.use(
   response => response,
   error => {
     if (error.response?.status === 401) {
-      // Rediriger vers la page de connexion si non authentifié
+      // Déconnecter l'utilisateur si non authentifié
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      window.location.href = '/login';
+      // Note: En production, utiliser React Router pour la navigation
+      // Pour le moment, rechargement simple de la page
+      window.location.reload();
     }
     return Promise.reject(error);
   }

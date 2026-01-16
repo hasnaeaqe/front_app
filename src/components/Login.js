@@ -60,14 +60,16 @@ function Login({ onLoginSuccess }) {
             {loading ? 'Connexion...' : 'Se connecter'}
           </button>
         </form>
-        <div style={styles.info}>
-          <h4>Comptes de test:</h4>
-          <ul>
-            <li>Admin: admin@cabinet.com / password123</li>
-            <li>Médecin: medecin1@cabinet.com / password123</li>
-            <li>Secrétaire: secretaire@cabinet.com / password123</li>
-          </ul>
-        </div>
+        {process.env.NODE_ENV === 'development' && (
+          <div style={styles.info}>
+            <h4>Comptes de test (développement uniquement):</h4>
+            <ul>
+              <li>Admin: admin@cabinet.com / password123</li>
+              <li>Médecin: medecin1@cabinet.com / password123</li>
+              <li>Secrétaire: secretaire@cabinet.com / password123</li>
+            </ul>
+          </div>
+        )}
       </div>
     </div>
   );
