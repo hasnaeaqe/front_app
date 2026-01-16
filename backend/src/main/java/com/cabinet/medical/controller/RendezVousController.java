@@ -50,7 +50,7 @@ public class RendezVousController {
     @GetMapping("/medecin/{medecinId}")
     public List<RendezVous> getRendezVousByMedecinAndDate(
             @PathVariable Long medecinId,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         return rendezVousService.findByMedecinAndDate(medecinId, date);
     }
 

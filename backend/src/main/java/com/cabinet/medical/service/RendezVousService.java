@@ -87,6 +87,9 @@ public class RendezVousService {
     }
 
     public List<RendezVous> findByMedecinAndDate(Long medecinId, LocalDate date) {
+        if (date == null) {
+            return rendezVousRepository.findByMedecinIdOrderByDateRdvDesc(medecinId);
+        }
         return rendezVousRepository.findByMedecinIdAndDateRdv(medecinId, date);
     }
 
