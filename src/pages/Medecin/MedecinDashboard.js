@@ -66,7 +66,7 @@ const MedecinDashboard = () => {
 
   const handleViewDossier = () => {
     if (patientEnCours) {
-      navigate(`/medecin/dossiers/${patientEnCours.id}`);
+      navigate(`/medecin/dossier-medical/${patientEnCours.id}`);
     }
   };
 
