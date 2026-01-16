@@ -11,7 +11,9 @@ const patientService = {
   
   delete: (id) => api.delete(`/patients/${id}`),
   
-  search: (query) => api.get(`/patients/search?query=${query}`)
+  search: (query) => api.get(`/patients/search?query=${query}`),
+  
+  sendToDoctor: (id) => api.post(`/patients/${id}/send-to-medecin`)
 };
 
 export default patientService;
