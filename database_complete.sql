@@ -225,17 +225,17 @@ INSERT INTO medicament (nom, description, posologie) VALUES
 ('Salbutamol', 'Bronchodilatateur', '100mcg par inhalation');
 
 -- 4. Insérer les utilisateurs (CRITIQUE : Insérer d'abord assez de médecins)
--- Note : Les mots de passe sont en clair pour le test (sans BCrypt)
+-- Note : Les mots de passe sont hachés avec SHA-256 (hash de "password123")
 INSERT INTO utilisateurs (nom, prenom, email, mot_de_passe, role, num_tel) VALUES
 -- Administrateur
-('Admin', 'System', 'admin@cabinet.com', 'password123', 'ADMINISTRATEUR', '0522000001'),
+('Admin', 'System', 'admin@cabinet.com', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'ADMINISTRATEUR', '0522000001'),
 -- Médecins (4 médecins pour correspondre aux données)
-('Benjelloun', 'Karim', 'medecin1@cabinet.com', 'password123', 'MEDECIN', '0522000002'),
-('El Fassi', 'Hassan', 'medecin2@cabinet.com', 'password123', 'MEDECIN', '0522000003'),
-('Berrada', 'Fatima', 'medecin3@cabinet.com', 'password123', 'MEDECIN', '0522000004'),
-('Alami', 'Mehdi', 'medecin4@cabinet.com', 'password123', 'MEDECIN', '0522000005'),
+('Benjelloun', 'Karim', 'medecin1@cabinet.com', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'MEDECIN', '0522000002'),
+('El Fassi', 'Hassan', 'medecin2@cabinet.com', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'MEDECIN', '0522000003'),
+('Berrada', 'Fatima', 'medecin3@cabinet.com', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'MEDECIN', '0522000004'),
+('Alami', 'Mehdi', 'medecin4@cabinet.com', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'MEDECIN', '0522000005'),
 -- Secrétaire
-('Idrissi', 'Leila', 'secretaire@cabinet.com', 'password123', 'SECRETAIRE', '0522000006');
+('Idrissi', 'Leila', 'secretaire@cabinet.com', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'SECRETAIRE', '0522000006');
 
 -- 5. Insérer les patients
 INSERT INTO patient (cin, nom, prenom, date_naissance, sexe, num_tel, email, adresse, type_mutuelle) VALUES

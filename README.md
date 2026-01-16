@@ -1,71 +1,317 @@
-# Getting Started with Create React App
+# Cabinet Médical - Application de Gestion
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Application complète de gestion de cabinet médical avec backend Spring Boot et frontend React.
 
-## Available Scripts
+## 🚀 Démarrage Rapide
 
-In the project directory, you can run:
+### Prérequis
 
-### `npm start`
+- **Java 17+** - [Télécharger Java](https://adoptium.net/)
+- **Maven 3.6+** - [Télécharger Maven](https://maven.apache.org/download.cgi)
+- **PostgreSQL 12+** - [Télécharger PostgreSQL](https://www.postgresql.org/download/)
+- **Node.js 14+** - [Télécharger Node.js](https://nodejs.org/)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Installation Complète
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+#### 1. Cloner le Projet
 
-### `npm test`
+```bash
+git clone https://github.com/hasnaeaqe/front_app.git
+cd front_app
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+#### 2. Configurer la Base de Données
 
-### `npm run build`
+```bash
+# Se connecter à PostgreSQL
+sudo -u postgres psql
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+# Créer la base de données
+CREATE DATABASE cabinet_medical;
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+# Quitter
+\q
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+# Importer le schéma et les données
+psql -U postgres -d cabinet_medical -f database_complete.sql
+```
 
-### `npm run eject`
+#### 3. Démarrer le Backend
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+```bash
+cd backend
+mvn clean install
+mvn spring-boot:run
+```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Le backend sera accessible sur: **http://localhost:8080**
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+#### 4. Démarrer le Frontend
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Dans un nouveau terminal:
 
-## Learn More
+```bash
+# Installer les dépendances
+npm install
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+# Démarrer l'application React
+npm start
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Le frontend sera accessible sur: **http://localhost:3000**
 
-### Code Splitting
+### Comptes de Test
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+| Email | Mot de passe | Rôle |
+|-------|--------------|------|
+| admin@cabinet.com | password123 | ADMINISTRATEUR |
+| medecin1@cabinet.com | password123 | MEDECIN |
+| medecin2@cabinet.com | password123 | MEDECIN |
+| secretaire@cabinet.com | password123 | SECRETAIRE |
 
-### Analyzing the Bundle Size
+## 📚 Documentation
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+- **[Documentation Backend](backend/README_BACKEND.md)** - Configuration détaillée du backend Spring Boot
+- **[API REST](#api-rest)** - Liste des endpoints disponibles
 
-### Making a Progressive Web App
+## 🏗️ Architecture
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+### Backend (Spring Boot)
 
-### Advanced Configuration
+- **Framework**: Spring Boot 3.2.1
+- **Java**: 17
+- **Base de données**: PostgreSQL
+- **Sécurité**: Spring Security + SHA-256
+- **Architecture**: REST API
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+**Structure:**
+```
+backend/
+├── src/main/java/com/cabinet/medical/
+│   ├── config/          # Configuration (CORS, Security)
+│   ├── controller/      # REST Controllers
+│   ├── dto/             # Data Transfer Objects
+│   ├── entity/          # JPA Entities
+│   ├── exception/       # Exception Handlers
+│   ├── repository/      # Spring Data Repositories
+│   ├── service/         # Business Logic
+│   └── util/            # Utilities
+└── src/main/resources/
+    └── application.properties
+```
 
-### Deployment
+### Frontend (React)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+- **Framework**: React 19
+- **HTTP Client**: Axios
+- **Style**: CSS-in-JS
 
-### `npm run build` fails to minify
+**Structure:**
+```
+src/
+├── components/          # React Components
+│   ├── Login.js
+│   └── PatientList.js
+├── services/            # API Services
+│   ├── api.js
+│   ├── authService.js
+│   ├── patientService.js
+│   └── ...
+└── App.js
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
-# front_app
+## 🔌 API REST
+
+### Authentification
+
+```
+POST /api/auth/login
+```
+
+### Health Check
+
+```
+GET /api/health
+```
+
+### Patients
+
+```
+GET    /api/patients              # Liste tous les patients
+GET    /api/patients/{id}         # Obtenir un patient
+POST   /api/patients              # Créer un patient
+PUT    /api/patients/{id}         # Modifier un patient
+DELETE /api/patients/{id}         # Supprimer un patient
+GET    /api/patients/search?query={query}  # Rechercher
+```
+
+### Rendez-vous
+
+```
+GET    /api/rendez-vous                     # Liste tous les RDV
+GET    /api/rendez-vous/{id}                # Obtenir un RDV
+POST   /api/rendez-vous                     # Créer un RDV
+PUT    /api/rendez-vous/{id}                # Modifier un RDV
+DELETE /api/rendez-vous/{id}                # Supprimer un RDV
+GET    /api/rendez-vous/medecin/{id}        # RDV par médecin
+GET    /api/rendez-vous/patient/{id}        # RDV d'un patient
+```
+
+### Consultations
+
+```
+GET    /api/consultations                   # Liste toutes les consultations
+GET    /api/consultations/{id}              # Obtenir une consultation
+POST   /api/consultations                   # Créer une consultation
+GET    /api/consultations/patient/{id}      # Consultations d'un patient
+```
+
+### Ordonnances
+
+```
+GET    /api/ordonnances                     # Liste toutes les ordonnances
+GET    /api/ordonnances/{id}                # Obtenir une ordonnance
+POST   /api/ordonnances                     # Créer une ordonnance
+GET    /api/ordonnances/patient/{id}        # Ordonnances d'un patient
+```
+
+### Médicaments
+
+```
+GET    /api/medicaments                     # Liste tous les médicaments
+GET    /api/medicaments/{id}                # Obtenir un médicament
+```
+
+## 🔒 Sécurité
+
+- Mots de passe hachés avec **SHA-256**
+- CORS configuré pour `http://localhost:3000`
+- Spring Security en mode stateless
+- Validation des données côté serveur
+
+## 🧪 Tests
+
+### Tester le Backend
+
+```bash
+cd backend
+mvn test
+```
+
+### Tester le Frontend
+
+```bash
+npm test
+```
+
+### Tester l'API avec curl
+
+```bash
+# Health check
+curl http://localhost:8080/api/health
+
+# Login
+curl -X POST http://localhost:8080/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@cabinet.com","password":"password123"}'
+
+# Liste des patients
+curl http://localhost:8080/api/patients
+```
+
+## 🛠️ Développement
+
+### Démarrer en mode développement
+
+Backend avec hot reload:
+```bash
+cd backend
+mvn spring-boot:run -Dspring-boot.run.fork=false
+```
+
+Frontend avec hot reload:
+```bash
+npm start
+```
+
+### Build pour la production
+
+Backend:
+```bash
+cd backend
+mvn clean package
+java -jar target/medical-1.0.0.jar
+```
+
+Frontend:
+```bash
+npm run build
+```
+
+## 📝 Scripts Disponibles
+
+### Frontend
+
+- `npm start` - Démarre le serveur de développement
+- `npm test` - Lance les tests
+- `npm run build` - Build pour la production
+- `npm run eject` - Eject la configuration
+
+### Backend
+
+- `mvn clean install` - Compile et installe
+- `mvn spring-boot:run` - Démarre le serveur
+- `mvn test` - Lance les tests
+- `mvn package` - Créé le JAR
+
+## 🐛 Résolution des Problèmes
+
+### Backend ne démarre pas
+
+1. Vérifier que PostgreSQL est démarré
+2. Vérifier les credentials dans `application.properties`
+3. Vérifier que le port 8080 est libre
+
+### Frontend ne se connecte pas au Backend
+
+1. Vérifier que le backend est démarré sur le port 8080
+2. Vérifier la configuration CORS dans `CorsConfig.java`
+3. Ouvrir la console du navigateur pour voir les erreurs
+
+### Erreur de connexion à la base de données
+
+1. Vérifier que PostgreSQL est démarré
+2. Vérifier que la base `cabinet_medical` existe
+3. Vérifier les credentials dans `application.properties`
+
+## 📦 Fonctionnalités
+
+- ✅ Authentification sécurisée (SHA-256)
+- ✅ Gestion des patients (CRUD complet)
+- ✅ Gestion des rendez-vous
+- ✅ Gestion des consultations
+- ✅ Gestion des ordonnances
+- ✅ Catalogue de médicaments
+- ✅ Recherche de patients
+- ✅ Interface utilisateur responsive
+- ✅ API REST complète
+- ✅ Documentation complète
+
+## 🤝 Contribution
+
+Les contributions sont les bienvenues! N'hésitez pas à ouvrir une issue ou une pull request.
+
+## 📄 Licence
+
+© 2024 Cabinet Médical. Tous droits réservés.
+
+## 👥 Support
+
+Pour toute question ou problème, consultez:
+- [Documentation Backend](backend/README_BACKEND.md)
+- Issues GitHub
+
+---
+
+**Note**: Cette application est conçue pour un environnement de développement. Pour un déploiement en production, des mesures de sécurité supplémentaires doivent être mises en place.
+
