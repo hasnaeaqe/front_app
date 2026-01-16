@@ -7,6 +7,7 @@ import Login from '../pages/Auth/Login';
 import AdminDashboard from '../pages/Admin/AdminDashboard';
 import SecretaireDashboard from '../pages/Secretaire/SecretaireDashboard';
 import MedecinDashboard from '../pages/Medecin/MedecinDashboard';
+import RendezVousList from '../pages/RendezVous/RendezVousList';
 
 // Placeholder components - will be created later
 const CabinetList = () => <div className="p-6"><h1 className="text-2xl font-bold">Gestion des Cabinets</h1></div>;
@@ -15,7 +16,6 @@ const MedicamentList = () => <div className="p-6"><h1 className="text-2xl font-b
 
 const PatientList = () => <div className="p-6"><h1 className="text-2xl font-bold">Gestion des Patients</h1></div>;
 const PatientProfile = () => <div className="p-6"><h1 className="text-2xl font-bold">Profil Patient</h1></div>;
-const RendezVousList = () => <div className="p-6"><h1 className="text-2xl font-bold">Gestion des Rendez-vous</h1></div>;
 const FactureList = () => <div className="p-6"><h1 className="text-2xl font-bold">Facturation</h1></div>;
 
 const RecherchePatients = () => <div className="p-6"><h1 className="text-2xl font-bold">Recherche Patients</h1></div>;
