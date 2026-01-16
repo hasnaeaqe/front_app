@@ -32,6 +32,7 @@ public class UtilisateurService {
             throw new InvalidCredentialsException("Ce compte est désactivé");
         }
 
+        // TODO: Implement proper JWT token generation for production
         String token = UUID.randomUUID().toString();
 
         return new LoginResponse(

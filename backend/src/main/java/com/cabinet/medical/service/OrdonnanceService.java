@@ -54,6 +54,7 @@ public class OrdonnanceService {
 
         Ordonnance savedOrdonnance = ordonnanceRepository.save(ordonnance);
 
+        // TODO: Consider using saveAll() for batch insert optimization for large medication lists
         for (OrdonnanceMedicamentRequest medicamentRequest : request.getMedicaments()) {
             Medicament medicament = medicamentRepository.findById(medicamentRequest.getMedicamentId())
                     .orElseThrow(() -> new ResourceNotFoundException("Médicament non trouvé avec l'id: " + medicamentRequest.getMedicamentId()));
