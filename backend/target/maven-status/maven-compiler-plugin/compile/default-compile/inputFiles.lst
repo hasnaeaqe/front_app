@@ -1,0 +1,15 @@
+/home/runner/work/front_app/front_app/backend/src/main/java/com/cabinet/medical/entity/Notification.java
+/home/runner/work/front_app/front_app/backend/src/main/java/com/cabinet/medical/entity/RendezVous.java
+/home/runner/work/front_app/front_app/backend/src/main/java/com/cabinet/medical/entity/Medicament.java
+/home/runner/work/front_app/front_app/backend/src/main/java/com/cabinet/medical/entity/DossierMedical.java
+/home/runner/work/front_app/front_app/backend/src/main/java/com/cabinet/medical/entity/PasswordResetToken.java
+/home/runner/work/front_app/front_app/backend/src/main/java/com/cabinet/medical/entity/Cabinet.java
+/home/runner/work/front_app/front_app/backend/src/main/java/com/cabinet/medical/entity/Specialite.java
+/home/runner/work/front_app/front_app/backend/src/main/java/com/cabinet/medical/CabinetMedicalApplication.java
+/home/runner/work/front_app/front_app/backend/src/main/java/com/cabinet/medical/entity/Consultation.java
+/home/runner/work/front_app/front_app/backend/src/main/java/com/cabinet/medical/entity/Facture.java
+/home/runner/work/front_app/front_app/backend/src/main/java/com/cabinet/medical/entity/Ordonnance.java
+/home/runner/work/front_app/front_app/backend/src/main/java/com/cabinet/medical/entity/Document.java
+/home/runner/work/front_app/front_app/backend/src/main/java/com/cabinet/medical/entity/Patient.java
+/home/runner/work/front_app/front_app/backend/src/main/java/com/cabinet/medical/entity/OrdonnanceMedicament.java
+/home/runner/work/front_app/front_app/backend/src/main/java/com/cabinet/medical/entity/Utilisateur.java
