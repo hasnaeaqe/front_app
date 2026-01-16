@@ -4,20 +4,20 @@ import { AuthProvider } from '../context/AuthContext';
 import { NotificationProvider } from '../context/NotificationContext';
 import ProtectedRoute from './ProtectedRoute';
 import Login from '../pages/Auth/Login';
+import AdminDashboard from '../pages/Admin/AdminDashboard';
+import SecretaireDashboard from '../pages/Secretaire/SecretaireDashboard';
+import MedecinDashboard from '../pages/Medecin/MedecinDashboard';
 
 // Placeholder components - will be created later
-const AdminDashboard = () => <div className="p-6"><h1 className="text-2xl font-bold">Dashboard Administrateur</h1></div>;
 const CabinetList = () => <div className="p-6"><h1 className="text-2xl font-bold">Gestion des Cabinets</h1></div>;
 const CompteList = () => <div className="p-6"><h1 className="text-2xl font-bold">Gestion des Comptes</h1></div>;
 const MedicamentList = () => <div className="p-6"><h1 className="text-2xl font-bold">Gestion des Médicaments</h1></div>;
 
-const SecretaireDashboard = () => <div className="p-6"><h1 className="text-2xl font-bold">Dashboard Secrétaire</h1></div>;
 const PatientList = () => <div className="p-6"><h1 className="text-2xl font-bold">Gestion des Patients</h1></div>;
 const PatientProfile = () => <div className="p-6"><h1 className="text-2xl font-bold">Profil Patient</h1></div>;
 const RendezVousList = () => <div className="p-6"><h1 className="text-2xl font-bold">Gestion des Rendez-vous</h1></div>;
 const FactureList = () => <div className="p-6"><h1 className="text-2xl font-bold">Facturation</h1></div>;
 
-const MedecinDashboard = () => <div className="p-6"><h1 className="text-2xl font-bold">Dashboard Médecin</h1></div>;
 const RecherchePatients = () => <div className="p-6"><h1 className="text-2xl font-bold">Recherche Patients</h1></div>;
 const ConsultationList = () => <div className="p-6"><h1 className="text-2xl font-bold">Consultations</h1></div>;
 const ConsultationForm = () => <div className="p-6"><h1 className="text-2xl font-bold">Nouvelle Consultation</h1></div>;
