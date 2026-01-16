@@ -53,12 +53,12 @@ const Autocomplete = ({
       case 'ArrowDown':
         e.preventDefault();
         setHighlightedIndex((prev) => 
-          prev < options.length - 1 ? prev + 1 : prev
+          prev < options.length - 1 ? prev + 1 : 0
         );
         break;
       case 'ArrowUp':
         e.preventDefault();
-        setHighlightedIndex((prev) => (prev > 0 ? prev - 1 : -1));
+        setHighlightedIndex((prev) => (prev > 0 ? prev - 1 : options.length - 1));
         break;
       case 'Enter':
         e.preventDefault();
@@ -106,24 +106,27 @@ const Autocomplete = ({
 
         {isOpen && options.length > 0 && (
           <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-auto">
-            {options.map((option, index) => (
-              <div
-                key={option.id || index}
-                onClick={() => handleSelect(option)}
-                className={`px-4 py-2 cursor-pointer transition-colors ${
-                  index === highlightedIndex
-                    ? 'bg-violet-50 text-violet-900'
-                    : 'hover:bg-gray-50'
-                }`}
-              >
-                <div className="font-medium text-gray-900">
-                  {option.label || option.name}
+            {options.map((option, index) => {
+              const optionKey = option.id !== undefined ? option.id : `${option.label || option.name}-${index}`;
+              return (
+                <div
+                  key={optionKey}
+                  onClick={() => handleSelect(option)}
+                  className={`px-4 py-2 cursor-pointer transition-colors ${
+                    index === highlightedIndex
+                      ? 'bg-violet-50 text-violet-900'
+                      : 'hover:bg-gray-50'
+                  }`}
+                >
+                  <div className="font-medium text-gray-900">
+                    {option.label || option.name}
+                  </div>
+                  {option.subtitle && (
+                    <div className="text-sm text-gray-500">{option.subtitle}</div>
+                  )}
                 </div>
-                {option.subtitle && (
-                  <div className="text-sm text-gray-500">{option.subtitle}</div>
-                )}
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
 
