@@ -7,6 +7,7 @@ import Button from '../../components/UI/Button';
 import Modal from '../../components/UI/Modal';
 import patientService from '../../services/patientService';
 import { useAuth } from '../../context/AuthContext';
+import toast from '../../utils/toast';
 import { 
   User, 
   Phone, 
@@ -191,10 +192,11 @@ const PatientProfile = () => {
   const handleSendToDoctor = async () => {
     try {
       // API call: POST /api/patients/:id/send-to-medecin
-      alert('Patient envoyé au médecin avec succès');
+      await patientService.sendToDoctor(id);
+      toast.success('Patient envoyé au médecin avec succès');
     } catch (err) {
       console.error('Erreur:', err);
-      alert('Erreur lors de l\'envoi au médecin');
+      toast.error('Erreur lors de l\'envoi au médecin');
     }
   };
 

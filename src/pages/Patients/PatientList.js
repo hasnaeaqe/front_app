@@ -9,6 +9,8 @@ import Modal from '../../components/UI/Modal';
 import Input from '../../components/UI/Input';
 import patientService from '../../services/patientService';
 import { useAuth } from '../../context/AuthContext';
+import { validatePhoneNumber } from '../../utils/validation';
+import toast from '../../utils/toast';
 import { 
   Search, 
   Plus, 
@@ -143,7 +145,7 @@ const PatientList = () => {
     if (!formData.prenom.trim()) errors.prenom = 'Prénom requis';
     if (!formData.dateNaissance) errors.dateNaissance = 'Date de naissance requise';
     if (!formData.telephone.trim()) errors.telephone = 'Téléphone requis';
-    else if (!/^0[567]\d{8}$/.test(formData.telephone)) {
+    else if (!validatePhoneNumber(formData.telephone)) {
       errors.telephone = 'Numéro de téléphone invalide';
     }
     if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
@@ -202,10 +204,10 @@ const PatientList = () => {
   const handleSendToDoctor = async (patient) => {
     try {
       await patientService.sendToDoctor(patient.id);
-      alert(`Patient ${patient.prenom} ${patient.nom} envoyé au médecin avec succès`);
+      toast.success(`Patient ${patient.prenom} ${patient.nom} envoyé au médecin avec succès`);
     } catch (err) {
       console.error('Erreur lors de l\'envoi au médecin:', err);
-      alert('Erreur lors de l\'envoi au médecin');
+      toast.error('Erreur lors de l\'envoi au médecin');
     }
   };
 
@@ -221,17 +223,17 @@ const PatientList = () => {
       
       if (modalMode === 'create') {
         await patientService.create(formData);
-        alert('Patient créé avec succès');
+        toast.success('Patient créé avec succès');
       } else {
         await patientService.update(selectedPatient.id, formData);
-        alert('Patient modifié avec succès');
+        toast.success('Patient modifié avec succès');
       }
       
       setShowModal(false);
       fetchPatients();
     } catch (err) {
       console.error('Erreur lors de la sauvegarde:', err);
-      alert('Erreur lors de la sauvegarde du patient');
+      toast.error('Erreur lors de la sauvegarde du patient');
     } finally {
       setLoading(false);
     }
@@ -241,12 +243,12 @@ const PatientList = () => {
     try {
       setLoading(true);
       await patientService.delete(selectedPatient.id);
-      alert('Patient supprimé avec succès');
+      toast.success('Patient supprimé avec succès');
       setShowDeleteConfirm(false);
       fetchPatients();
     } catch (err) {
       console.error('Erreur lors de la suppression:', err);
-      alert('Erreur lors de la suppression du patient');
+      toast.error('Erreur lors de la suppression du patient');
     } finally {
       setLoading(false);
     }
