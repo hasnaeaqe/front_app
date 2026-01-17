@@ -10,7 +10,6 @@ import toast from '../../utils/toast';
 import { 
   FileText, 
   Save, 
-  Edit,
   ArrowLeft,
   User,
   AlertTriangle,
@@ -20,7 +19,22 @@ import {
 const DossierMedicalForm = () => {
   const { patientId } = useParams();
   const navigate = useNavigate();
-  const { userRole } = useAuth();
+  const { user } = useAuth();
+  
+  // Helper function to calculate age
+  const calculateAge = (dateNaissance) => {
+    if (!dateNaissance) return 'N/A';
+    const today = new Date();
+    const birthDate = new Date(dateNaissance);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    
+    return age;
+  };
   
   // State
   const [patient, setPatient] = useState(null);
@@ -45,6 +59,7 @@ const DossierMedicalForm = () => {
     if (patientId) {
       fetchData();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [patientId]);
 
   const fetchData = async () => {
@@ -52,47 +67,34 @@ const DossierMedicalForm = () => {
       setLoading(true);
       setError(null);
       
-      // TODO: Replace with actual API calls when backend is ready
-      // const patientResponse = await patientService.getById(patientId);
-      // const dossierResponse = await dossierMedicalService.getByPatient(patientId);
+      // Fetch patient data from database
+      const patientResponse = await patientService.getById(patientId);
+      setPatient(patientResponse.data);
       
-      // Mock data for development
-      const mockPatient = {
-        id: patientId,
-        nom: 'Alami',
-        prenom: 'Mohammed',
-        cin: 'AB123456',
-        dateNaissance: '1985-05-15',
-        age: 38
-      };
-      
-      const mockDossier = {
-        id: 1,
-        patientId: patientId,
-        antecedentsMedicaux: 'Hypertension artérielle depuis 2018\nDiabète de type 2 diagnostiqué en 2020',
-        antecedentsChirurgicaux: 'Appendicectomie en 2005\nChirurgie du genou en 2019',
-        allergies: 'Pénicilline\nPollen',
-        habitudes: 'Non fumeur\nConsommation d\'alcool occasionnelle\nPratique du sport 2 fois par semaine',
-        diagnosticActuel: 'Suivi régulier pour hypertension et diabète',
-        traitementActuel: 'Amlodipine 5mg - 1cp/jour\nMetformine 850mg - 2cp/jour',
-        observations: 'Patient compliant au traitement\nContrôle régulier des paramètres nécessaire'
-      };
-      
-      setPatient(mockPatient);
-      setDossierMedical(mockDossier);
-      
-      if (mockDossier) {
-        setFormData({
-          antecedentsMedicaux: mockDossier.antecedentsMedicaux || '',
-          antecedentsChirurgicaux: mockDossier.antecedentsChirurgicaux || '',
-          allergies: mockDossier.allergies || '',
-          habitudes: mockDossier.habitudes || '',
-          diagnosticActuel: mockDossier.diagnosticActuel || '',
-          traitementActuel: mockDossier.traitementActuel || '',
-          observations: mockDossier.observations || ''
-        });
-        setIsEditing(true);
-      } else {
+      // Fetch dossier medical from database
+      try {
+        const dossierResponse = await dossierMedicalService.getByPatient(patientId);
+        const dossier = dossierResponse.data;
+        setDossierMedical(dossier);
+        
+        if (dossier) {
+          setFormData({
+            antecedentsMedicaux: dossier.antecedentsMedicaux || '',
+            antecedentsChirurgicaux: dossier.antecedentsChirurgicaux || '',
+            allergies: dossier.allergies || '',
+            habitudes: dossier.habitudes || '',
+            diagnosticActuel: dossier.diagnosticActuel || '',
+            traitementActuel: dossier.traitementActuel || '',
+            observations: dossier.observations || ''
+          });
+          setIsEditing(true);
+        } else {
+          setIsEditing(false);
+        }
+      } catch (dossierError) {
+        // Dossier medical doesn't exist yet, which is OK
+        console.log('No dossier medical found, creating new one');
+        setDossierMedical(null);
         setIsEditing(false);
       }
     } catch (err) {
@@ -127,15 +129,16 @@ const DossierMedicalForm = () => {
       
       const dossierData = {
         patientId: patientId,
+        medecinId: user.id,
         ...formData
       };
       
-      // TODO: Replace with actual API calls
+      // Save to database
       if (isEditing && dossierMedical) {
-        // await dossierMedicalService.update(dossierMedical.id, dossierData);
+        await dossierMedicalService.update(dossierMedical.id, dossierData);
         toast.success('Dossier médical mis à jour avec succès');
       } else {
-        // await dossierMedicalService.create(dossierData);
+        await dossierMedicalService.create(dossierData);
         toast.success('Dossier médical créé avec succès');
       }
       
@@ -220,7 +223,7 @@ const DossierMedicalForm = () => {
               <div className="flex items-center space-x-4 mt-1 text-sm text-gray-600">
                 <span>CIN: {patient.cin}</span>
                 <span>•</span>
-                <span>{patient.age} ans</span>
+                <span>{calculateAge(patient.dateNaissance)} ans</span>
               </div>
             </div>
           </div>

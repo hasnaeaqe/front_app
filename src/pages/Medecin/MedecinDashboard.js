@@ -19,6 +19,8 @@ const MedecinDashboard = () => {
     revenuAujourdhui: 0
   });
   
+  const [recentPatients, setRecentPatients] = useState([]);
+  const [upcomingConsultations, setUpcomingConsultations] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -40,6 +42,14 @@ const MedecinDashboard = () => {
       if (user && user.id) {
         const response = await medecinService.getStats(user.id);
         setStats(response.data);
+        
+        // Fetch recent patients and upcoming consultations from stats API response
+        if (response.data.patientsRecents) {
+          setRecentPatients(response.data.patientsRecents);
+        }
+        if (response.data.prochainesConsultations) {
+          setUpcomingConsultations(response.data.prochainesConsultations);
+        }
       }
     } catch (error) {
       console.error('Erreur lors de la récupération des statistiques:', error);
@@ -234,29 +244,25 @@ const MedecinDashboard = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Card borderColor="violet">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Prochaines Consultations</h3>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                <div>
-                  <p className="text-sm font-medium text-gray-900">Mohammed Ben Ali</p>
-                  <p className="text-xs text-gray-600">Consultation de suivi</p>
-                </div>
-                <span className="text-xs text-violet-600 font-medium">10:00</span>
+            {upcomingConsultations.length > 0 ? (
+              <div className="space-y-3">
+                {upcomingConsultations.map((consultation, index) => (
+                  <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">
+                        {consultation.patientNom} {consultation.patientPrenom}
+                      </p>
+                      <p className="text-xs text-gray-600">{consultation.motif || 'Consultation'}</p>
+                    </div>
+                    <span className="text-xs text-violet-600 font-medium">{consultation.heure}</span>
+                  </div>
+                ))}
               </div>
-              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                <div>
-                  <p className="text-sm font-medium text-gray-900">Fatima Zahra</p>
-                  <p className="text-xs text-gray-600">Première consultation</p>
-                </div>
-                <span className="text-xs text-gray-600 font-medium">11:00</span>
+            ) : (
+              <div className="text-center py-6 text-gray-500">
+                <p className="text-sm">Aucune consultation prévue aujourd'hui</p>
               </div>
-              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                <div>
-                  <p className="text-sm font-medium text-gray-900">Ahmed Idrissi</p>
-                  <p className="text-xs text-gray-600">Contrôle mensuel</p>
-                </div>
-                <span className="text-xs text-gray-600 font-medium">14:00</span>
-              </div>
-            </div>
+            )}
           </Card>
 
           <Card borderColor="cyan">
@@ -296,62 +302,53 @@ const MedecinDashboard = () => {
         {/* Recent Patients */}
         <Card borderColor="green">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Patients Récents</h3>
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead>
-                <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Patient</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Dernière Visite</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Diagnostic</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                <tr className="hover:bg-gray-50">
-                  <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
-                    Mohammed Ben Ali
-                  </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
-                    Hier, 14:30
-                  </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
-                    Grippe saisonnière
-                  </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-sm">
-                    <Button variant="outline" size="sm">Voir dossier</Button>
-                  </td>
-                </tr>
-                <tr className="hover:bg-gray-50">
-                  <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
-                    Fatima Zahra
-                  </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
-                    Il y a 2 jours
-                  </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
-                    Consultation de routine
-                  </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-sm">
-                    <Button variant="outline" size="sm">Voir dossier</Button>
-                  </td>
-                </tr>
-                <tr className="hover:bg-gray-50">
-                  <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
-                    Ahmed Idrissi
-                  </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
-                    Il y a 3 jours
-                  </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
-                    Hypertension
-                  </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-sm">
-                    <Button variant="outline" size="sm">Voir dossier</Button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+          {recentPatients.length > 0 ? (
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead>
+                  <tr>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Patient</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Dernière Visite</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Diagnostic</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Action</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {recentPatients.map((patient) => (
+                    <tr key={patient.id} className="hover:bg-gray-50">
+                      <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {patient.nom} {patient.prenom}
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
+                        {patient.derniereVisite ? new Date(patient.derniereVisite).toLocaleDateString('fr-FR', {
+                          day: 'numeric',
+                          month: 'short',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        }) : 'N/A'}
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
+                        {patient.dernierDiagnostic || 'N/A'}
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap text-sm">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => navigate(`/medecin/patients/${patient.id}`)}
+                        >
+                          Voir dossier
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="text-center py-6 text-gray-500">
+              <p className="text-sm">Aucun patient récent</p>
+            </div>
+          )}
         </Card>
       </div>
     </DashboardLayout>

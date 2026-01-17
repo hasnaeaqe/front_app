@@ -42,10 +42,12 @@ const ConsultationList = () => {
 
   useEffect(() => {
     fetchConsultations();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     applyFilters();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [consultations, dateFrom, dateTo, statusFilter]);
 
   const fetchConsultations = async () => {
