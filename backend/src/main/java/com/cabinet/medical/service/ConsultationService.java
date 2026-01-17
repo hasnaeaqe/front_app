@@ -1,5 +1,6 @@
 package com.cabinet.medical.service;
 
+import com.cabinet.medical.dto.ConsultationDTO;
 import com.cabinet.medical.dto.request.ConsultationRequest;
 import com.cabinet.medical.entity.Consultation;
 import com.cabinet.medical.entity.Patient;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -62,5 +64,39 @@ public class ConsultationService {
 
     public List<Consultation> findByPatient(Long patientId) {
         return consultationRepository.findByPatientIdOrderByDateConsultationDesc(patientId);
+    }
+    
+    /**
+     * New methods for Medecin module
+     */
+    public List<ConsultationDTO> findByPatientAsDTO(Long patientId) {
+        return consultationRepository.findByPatientIdOrderByDateConsultationDesc(patientId)
+            .stream()
+            .map(this::convertToDTO)
+            .collect(Collectors.toList());
+    }
+    
+    public List<ConsultationDTO> findByMedecinToday(Long medecinId) {
+        return consultationRepository.findByMedecinId(medecinId)
+            .stream()
+            .map(this::convertToDTO)
+            .collect(Collectors.toList());
+    }
+    
+    public ConsultationDTO convertToDTO(Consultation consultation) {
+        return new ConsultationDTO(
+            consultation.getId(),
+            consultation.getPatient().getId(),
+            consultation.getPatient().getNom(),
+            consultation.getPatient().getPrenom(),
+            consultation.getMedecin().getId(),
+            consultation.getMedecin().getNom(),
+            consultation.getMedecin().getPrenom(),
+            consultation.getDiagnostic(),
+            consultation.getTraitement(),
+            consultation.getObservations(),
+            consultation.getDateConsultation(),
+            consultation.getDuree()
+        );
     }
 }

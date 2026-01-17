@@ -28,13 +28,13 @@ export const NotificationProvider = ({ children }) => {
     if (!isAuthenticated || user?.role !== 'MEDECIN') return;
     
     try {
-      const response = await api.get(`/notifications/patient-encours/${user.id}`);
+      const response = await api.get(`/api/notifications/medecin/${user.id}/patient-encours`);
       if (response.data) {
         setPatientEnCours(response.data);
       }
     } catch (error) {
       // Pas de patient en cours, c'est normal
-      console.debug('Aucun patient en cours');
+      setPatientEnCours(null);
     }
   }, [isAuthenticated, user]);
 

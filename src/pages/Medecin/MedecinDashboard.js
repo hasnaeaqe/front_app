@@ -4,29 +4,49 @@ import DashboardLayout from '../../components/Layout/DashboardLayout';
 import { StatCard, Card, Button } from '../../components/UI';
 import { useNotifications } from '../../context/NotificationContext';
 import { Users, Stethoscope, Clock, DollarSign, AlertCircle, Search, Printer, ArrowRight } from 'lucide-react';
+import medecinService from '../../services/medecinService';
+import { useAuth } from '../../context/AuthContext';
 
 const MedecinDashboard = () => {
   const navigate = useNavigate();
   const { patientEnCours } = useNotifications();
+  const { user } = useAuth();
   
-  const [stats] = useState({
-    patientsTotal: 89,
-    consultationsAujourdhui: 6,
-    consultationsEnCours: 2,
-    revenuAujourdhui: '3,200'
+  const [stats, setStats] = useState({
+    patientsTotal: 0,
+    consultationsAujourdhui: 0,
+    consultationsEnCours: 0,
+    revenuAujourdhui: 0
   });
+  
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    // TODO: API call to fetch medecin statistics
-    // const fetchStats = async () => {
-    //   try {
-    //     const response = await api.get('/api/medecin/stats');
-    //     setStats(response.data);
-    //   } catch (error) {
-    //     console.error('Erreur lors de la récupération des statistiques:', error);
-    //   }
-    // };
-    // fetchStats();
-  }, []);
+    fetchStats();
+    // Poll for patient en cours every 10 seconds
+    const interval = setInterval(() => {
+      if (user && user.id) {
+        medecinService.getPatientEnCours(user.id).catch(() => {});
+      }
+    }, 10000);
+    
+    return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
+
+  const fetchStats = async () => {
+    try {
+      setLoading(true);
+      if (user && user.id) {
+        const response = await medecinService.getStats(user.id);
+        setStats(response.data);
+      }
+    } catch (error) {
+      console.error('Erreur lors de la récupération des statistiques:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const quickActions = [
     {
@@ -84,6 +104,16 @@ const MedecinDashboard = () => {
     };
     return colors[color] || colors.violet;
   };
+
+  if (loading) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-gray-600">Chargement...</div>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>
