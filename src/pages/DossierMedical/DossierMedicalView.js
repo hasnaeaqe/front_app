@@ -57,7 +57,8 @@ const DossierMedicalView = ({ patientId: propPatientId, embedded = false }) => {
         setError('Session expirée. Veuillez vous reconnecter.');
         toast.error('Session expirée');
       } else if (err.response?.status === 404) {
-        // No medical record found - this is OK, user can create one
+        // 404 typically means no medical record exists for this patient
+        // User will see the "create new record" option
         setDossierMedical(null);
         setError(null);
       } else {

@@ -31,7 +31,7 @@ const RecherchePatients = () => {
         response = await medecinService.searchPatients(type, trimmedQuery);
       } catch (medecinError) {
         // If medecin service fails, fall back to patient service
-        console.log('Medecin search service unavailable, using patient service');
+        console.warn('Medecin search service unavailable, using patient service:', medecinError);
         response = await patientService.search(trimmedQuery);
       }
       
