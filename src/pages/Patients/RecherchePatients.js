@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '../../components/Layout/DashboardLayout';
 import Card from '../../components/UI/Card';
 import Input from '../../components/UI/Input';
 import Button from '../../components/UI/Button';
 import patientService from '../../services/patientService';
+import toast from '../../utils/toast';
 import { 
   Search, 
   User, 
@@ -20,14 +21,46 @@ const RecherchePatients = () => {
   // State
   const [searchType, setSearchType] = useState('nom');
   const [searchTerm, setSearchTerm] = useState('');
+  const [allPatients, setAllPatients] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [hasSearched, setHasSearched] = useState(false);
+
+  // Load all patients on component mount
+  useEffect(() => {
+    fetchAllPatients();
+  }, []);
+
+  const fetchAllPatients = async () => {
+    try {
+      setLoading(true);
+      const response = await patientService.getAll();
+      const patients = response.data || [];
+      setAllPatients(patients);
+      setSearchResults(patients);
+      
+      if (patients.length > 0) {
+        toast.show(`${patients.length} patient(s) chargé(s)`, 'success');
+      } else {
+        toast.show('Aucun patient trouvé dans la base de données', 'info');
+      }
+    } catch (err) {
+      console.error('Erreur lors du chargement des patients:', err);
+      toast.show('Erreur lors du chargement des patients. Vérifiez que le backend est démarré.', 'error');
+      setAllPatients([]);
+      setSearchResults([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSearch = async (e) => {
     e.preventDefault();
     
     if (!searchTerm.trim()) {
+      // If search is empty, show all patients
+      setSearchResults(allPatients);
+      setHasSearched(false);
       return;
     }
 
@@ -35,11 +68,8 @@ const RecherchePatients = () => {
       setLoading(true);
       setHasSearched(true);
       
-      // API call: GET /api/patients/search?query=...
-      const response = await patientService.search(searchTerm);
-      
-      // Filter based on search type
-      let results = response.data || [];
+      // Filter from all patients based on search type
+      let results = [...allPatients];
       
       if (searchType === 'nom') {
         results = results.filter(patient => 
@@ -53,31 +83,16 @@ const RecherchePatients = () => {
       }
       
       setSearchResults(results);
+      
+      if (results.length === 0) {
+        toast.show('Aucun patient trouvé', 'info');
+      } else {
+        toast.show(`${results.length} patient(s) trouvé(s)`, 'success');
+      }
     } catch (err) {
       console.error('Erreur lors de la recherche:', err);
-      // Sample data for development
-      setSearchResults([
-        {
-          id: 1,
-          cin: 'AB123456',
-          nom: 'Alami',
-          prenom: 'Mohammed',
-          dateNaissance: '1985-03-15',
-          telephone: '0612345678',
-          email: 'mohammed.alami@email.com',
-          lastConsultation: '2024-01-15'
-        },
-        {
-          id: 2,
-          cin: 'CD789012',
-          nom: 'Bennani',
-          prenom: 'Fatima',
-          dateNaissance: '1990-07-22',
-          telephone: '0698765432',
-          email: 'fatima.bennani@email.com',
-          lastConsultation: '2024-01-10'
-        }
-      ]);
+      toast.show('Erreur lors de la recherche des patients', 'error');
+      setSearchResults([]);
     } finally {
       setLoading(false);
     }
@@ -175,29 +190,28 @@ const RecherchePatients = () => {
         </Card>
 
         {/* Search Results */}
-        {hasSearched && (
-          <div className="max-w-6xl mx-auto">
-            {loading ? (
-              <div className="flex justify-center items-center py-12">
-                <Loader className="animate-spin text-violet-600" size={40} />
+        <div className="max-w-6xl mx-auto">
+          {loading ? (
+            <div className="flex justify-center items-center py-12">
+              <Loader className="animate-spin text-violet-600" size={40} />
+            </div>
+          ) : searchResults.length === 0 ? (
+            <Card>
+              <div className="text-center py-12">
+                <User size={64} className="mx-auto text-gray-300 mb-4" />
+                <p className="text-xl text-gray-600">Aucun patient trouvé</p>
+                <p className="text-gray-500 mt-2">
+                  {hasSearched ? 'Essayez avec un autre nom ou numéro CIN' : 'Aucun patient dans la base de données'}
+                </p>
               </div>
-            ) : searchResults.length === 0 ? (
-              <Card>
-                <div className="text-center py-12">
-                  <User size={64} className="mx-auto text-gray-300 mb-4" />
-                  <p className="text-xl text-gray-600">Aucun patient trouvé</p>
-                  <p className="text-gray-500 mt-2">
-                    Essayez avec un autre nom ou numéro CIN
-                  </p>
-                </div>
-              </Card>
-            ) : (
-              <div>
-                <div className="mb-4">
-                  <p className="text-gray-700 text-lg">
-                    <span className="font-semibold">{searchResults.length}</span> patient(s) trouvé(s)
-                  </p>
-                </div>
+            </Card>
+          ) : (
+            <div>
+              <div className="mb-4">
+                <p className="text-gray-700 text-lg">
+                  <span className="font-semibold">{searchResults.length}</span> patient(s) {hasSearched ? 'trouvé(s)' : 'dans la base de données'}
+                </p>
+              </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {searchResults.map((patient) => (
@@ -224,7 +238,7 @@ const RecherchePatients = () => {
                           </div>
                           <div className="flex items-center gap-2 text-gray-700">
                             <Phone size={16} className="text-violet-600 flex-shrink-0" />
-                            <span className="truncate">{patient.telephone}</span>
+                            <span className="truncate">{patient.numTel || 'Non renseigné'}</span>
                           </div>
                           {patient.email && (
                             <div className="flex items-center gap-2 text-gray-700">
@@ -266,23 +280,7 @@ const RecherchePatients = () => {
                 </div>
               </div>
             )}
-          </div>
-        )}
-
-        {/* Initial State - No Search Yet */}
-        {!hasSearched && !loading && (
-          <Card className="max-w-2xl mx-auto">
-            <div className="text-center py-12">
-              <Search size={64} className="mx-auto text-gray-300 mb-4" />
-              <h2 className="text-xl font-semibold text-gray-700 mb-2">
-                Commencez votre recherche
-              </h2>
-              <p className="text-gray-500">
-                Utilisez la barre de recherche ci-dessus pour trouver un patient
-              </p>
-            </div>
-          </Card>
-        )}
+        </div>
       </div>
     </DashboardLayout>
   );

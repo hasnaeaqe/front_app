@@ -37,7 +37,7 @@ const Sidebar = ({ isOpen, onClose }) => {
       { name: 'Dashboard', path: '/medecin/dashboard', icon: Home },
       { name: 'Recherche Patients', path: '/medecin/recherche-patients', icon: Search },
       { name: 'Consultations', path: '/medecin/consultations', icon: Stethoscope },
-      { name: 'Dossier Médical', path: '/medecin/dossier-medical', icon: FileText },
+      { name: 'Dossiers Médicaux', path: '/medecin/recherche-patients', icon: FileText },
     ],
   };
 

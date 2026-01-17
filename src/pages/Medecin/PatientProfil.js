@@ -4,7 +4,7 @@ import DashboardLayout from '../../components/Layout/DashboardLayout';
 import { Card, Button, Badge } from '../../components/UI';
 import { User, Phone, Mail, MapPin, FileText, ClipboardList, Pill, Edit, Plus } from 'lucide-react';
 import medecinService from '../../services/medecinService';
-import toast from 'react-hot-toast';
+import toast from '../../utils/toast';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
@@ -27,7 +27,8 @@ const PatientProfil = () => {
       setPatient(response.data);
     } catch (error) {
       console.error('Erreur lors de la récupération du profil:', error);
-      toast.error('Erreur lors de la récupération du profil patient');
+      toast.show('Erreur lors de la récupération du profil patient', 'error');
+      // Don't redirect, stay on the page to show the error
     } finally {
       setLoading(false);
     }

@@ -69,15 +69,26 @@ const ConsultationList = () => {
         response = await consultationService.getAll();
       }
       
-      setConsultations(response.data || []);
+      const data = response.data || [];
+      setConsultations(data);
+      
+      if (data.length === 0) {
+        toast.show('Aucune consultation trouvée', 'info');
+      } else {
+        toast.show(`${data.length} consultation(s) chargée(s)`, 'success');
+      }
     } catch (err) {
       console.error('Error fetching consultations:', err);
       if (err.response?.status === 404) {
         // No consultations found - this is OK
         setConsultations([]);
+        toast.show('Aucune consultation trouvée', 'info');
+      } else if (err.code === 'ERR_NETWORK' || err.message.includes('Network Error')) {
+        setError('Impossible de se connecter au serveur. Vérifiez que le backend est démarré.');
+        toast.show('Erreur de connexion au serveur. Vérifiez que le backend est démarré sur le port 8080.', 'error');
       } else {
         setError('Erreur lors du chargement des consultations');
-        toast.error('Erreur lors du chargement des consultations');
+        toast.show('Erreur lors du chargement des consultations. Vérifiez que le backend est démarré.', 'error');
       }
     } finally {
       setLoading(false);
@@ -89,16 +100,13 @@ const ConsultationList = () => {
     
     // Filter by date range
     if (dateFrom) {
-      filtered = filtered.filter(c => new Date(c.date) >= new Date(dateFrom));
+      filtered = filtered.filter(c => new Date(c.dateConsultation) >= new Date(dateFrom));
     }
     if (dateTo) {
-      filtered = filtered.filter(c => new Date(c.date) <= new Date(dateTo));
+      filtered = filtered.filter(c => new Date(c.dateConsultation) <= new Date(dateTo));
     }
     
-    // Filter by status
-    if (statusFilter && statusFilter !== 'Toutes') {
-      filtered = filtered.filter(c => c.statut === statusFilter);
-    }
+    // Note: Status filter removed since backend doesn't return status
     
     setFilteredConsultations(filtered);
   };
@@ -127,30 +135,30 @@ const ConsultationList = () => {
   const columns = [
     {
       header: 'Date & Heure',
-      accessor: 'date',
+      accessor: 'dateConsultation',
       render: (row) => (
         <div className="flex flex-col">
           <div className="flex items-center text-sm font-medium text-gray-900">
             <Calendar className="w-4 h-4 mr-2 text-gray-400" />
-            {new Date(row.date).toLocaleDateString('fr-FR')}
+            {new Date(row.dateConsultation).toLocaleDateString('fr-FR')}
           </div>
           <div className="flex items-center text-sm text-gray-500 mt-1">
             <Clock className="w-4 h-4 mr-2 text-gray-400" />
-            {row.heure}
+            {new Date(row.dateConsultation).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
           </div>
         </div>
       )
     },
     {
       header: 'Patient',
-      accessor: 'patient',
+      accessor: 'patientNom',
       render: (row) => (
         <div className="flex flex-col">
           <div className="text-sm font-medium text-gray-900">
-            {row.patient.nom} {row.patient.prenom}
+            {row.patientNom} {row.patientPrenom}
           </div>
           <div className="text-sm text-gray-500">
-            CIN: {row.patient.cin}
+            ID: {row.patientId}
           </div>
         </div>
       )
@@ -160,7 +168,7 @@ const ConsultationList = () => {
       accessor: 'diagnostic',
       render: (row) => (
         <div className="text-sm text-gray-700">
-          {truncateText(row.diagnostic)}
+          {row.diagnostic ? truncateText(row.diagnostic) : '-'}
         </div>
       )
     },
@@ -174,12 +182,12 @@ const ConsultationList = () => {
       )
     },
     {
-      header: 'Statut',
-      accessor: 'statut',
+      header: 'Médecin',
+      accessor: 'medecinNom',
       render: (row) => (
-        <Badge variant={getStatusBadgeVariant(row.statut)}>
-          {row.statut}
-        </Badge>
+        <div className="text-sm text-gray-700">
+          Dr. {row.medecinNom} {row.medecinPrenom}
+        </div>
       )
     },
     {
@@ -288,24 +296,45 @@ const ConsultationList = () => {
               <div>
                 <h3 className="text-sm font-medium text-gray-500">Patient</h3>
                 <p className="mt-1 text-sm text-gray-900">
-                  {selectedConsultation.patient.nom} {selectedConsultation.patient.prenom}
+                  {selectedConsultation.patientNom} {selectedConsultation.patientPrenom}
                 </p>
                 <p className="text-sm text-gray-600">
-                  CIN: {selectedConsultation.patient.cin}
+                  ID: {selectedConsultation.patientId}
+                </p>
+              </div>
+              
+              <div>
+                <h3 className="text-sm font-medium text-gray-500">Médecin</h3>
+                <p className="mt-1 text-sm text-gray-900">
+                  Dr. {selectedConsultation.medecinNom} {selectedConsultation.medecinPrenom}
                 </p>
               </div>
               
               <div>
                 <h3 className="text-sm font-medium text-gray-500">Date et heure</h3>
                 <p className="mt-1 text-sm text-gray-900">
-                  {new Date(selectedConsultation.date).toLocaleDateString('fr-FR')} à {selectedConsultation.heure}
+                  {new Date(selectedConsultation.dateConsultation).toLocaleDateString('fr-FR')} à {new Date(selectedConsultation.dateConsultation).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
                 </p>
               </div>
               
               <div>
                 <h3 className="text-sm font-medium text-gray-500">Diagnostic</h3>
                 <p className="mt-1 text-sm text-gray-900">
-                  {selectedConsultation.diagnostic}
+                  {selectedConsultation.diagnostic || '-'}
+                </p>
+              </div>
+              
+              <div>
+                <h3 className="text-sm font-medium text-gray-500">Traitement</h3>
+                <p className="mt-1 text-sm text-gray-900">
+                  {selectedConsultation.traitement || '-'}
+                </p>
+              </div>
+              
+              <div>
+                <h3 className="text-sm font-medium text-gray-500">Observations</h3>
+                <p className="mt-1 text-sm text-gray-900">
+                  {selectedConsultation.observations || '-'}
                 </p>
               </div>
               
@@ -314,15 +343,6 @@ const ConsultationList = () => {
                 <p className="mt-1 text-sm text-gray-900">
                   {selectedConsultation.duree > 0 ? `${selectedConsultation.duree} minutes` : 'Non définie'}
                 </p>
-              </div>
-              
-              <div>
-                <h3 className="text-sm font-medium text-gray-500">Statut</h3>
-                <div className="mt-1">
-                  <Badge variant={getStatusBadgeVariant(selectedConsultation.statut)}>
-                    {selectedConsultation.statut}
-                  </Badge>
-                </div>
               </div>
               
               <div className="flex justify-end space-x-3 pt-4 border-t">
