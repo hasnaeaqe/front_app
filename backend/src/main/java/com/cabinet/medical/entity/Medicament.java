@@ -27,6 +27,12 @@ public class Medicament {
     @Column(length = 500)
     private String posologie;
 
+    @Column(length = 100)
+    private String categorie;
+
+    @Column(length = 255)
+    private String fabricant;
+
     @Column(name = "date_creation", updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime dateCreation;
 

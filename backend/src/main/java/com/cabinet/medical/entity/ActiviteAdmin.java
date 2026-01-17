@@ -8,29 +8,24 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "cabinet")
+@Table(name = "activite_admin")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Cabinet {
+public class ActiviteAdmin {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String nom;
+    @Column(nullable = false, length = 50)
+    private String type;
 
-    @Column(length = 500)
-    private String adresse;
+    @Column(nullable = false, length = 255)
+    private String titre;
 
-    @Column(name = "num_tel", length = 20)
-    private String numTel;
-
-    private String email;
-
-    @Column(columnDefinition = "BOOLEAN DEFAULT true")
-    private Boolean actif = true;
+    @Column(columnDefinition = "TEXT")
+    private String description;
 
     @Column(name = "date_creation", updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime dateCreation;
@@ -39,9 +34,6 @@ public class Cabinet {
     protected void onCreate() {
         if (dateCreation == null) {
             dateCreation = LocalDateTime.now();
-        }
-        if (actif == null) {
-            actif = true;
         }
     }
 }

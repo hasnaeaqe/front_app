@@ -41,6 +41,14 @@ public class Utilisateur {
 
     private String signature;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cabinet_id")
+    private Cabinet cabinet;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "specialite_id")
+    private Specialite specialite;
+
     @Column(columnDefinition = "BOOLEAN DEFAULT true")
     private Boolean actif = true;
 
