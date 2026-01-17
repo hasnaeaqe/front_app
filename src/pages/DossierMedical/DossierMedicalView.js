@@ -51,8 +51,19 @@ const DossierMedicalView = ({ patientId: propPatientId, embedded = false }) => {
       }
     } catch (err) {
       console.error('Error fetching dossier medical:', err);
-      setError('Erreur lors du chargement du dossier médical');
-      toast.error('Erreur lors du chargement du dossier médical');
+      
+      // Handle different error types
+      if (err.response?.status === 401) {
+        setError('Session expirée. Veuillez vous reconnecter.');
+        toast.error('Session expirée');
+      } else if (err.response?.status === 404) {
+        // No medical record found - this is OK, user can create one
+        setDossierMedical(null);
+        setError(null);
+      } else {
+        setError('Erreur lors du chargement du dossier médical');
+        toast.error('Erreur lors du chargement du dossier médical');
+      }
     } finally {
       setLoading(false);
     }

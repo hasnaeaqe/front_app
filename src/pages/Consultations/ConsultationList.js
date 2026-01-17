@@ -72,8 +72,13 @@ const ConsultationList = () => {
       setConsultations(response.data || []);
     } catch (err) {
       console.error('Error fetching consultations:', err);
-      setError('Erreur lors du chargement des consultations');
-      toast.error('Erreur lors du chargement des consultations');
+      if (err.response?.status === 404) {
+        // No consultations found - this is OK
+        setConsultations([]);
+      } else {
+        setError('Erreur lors du chargement des consultations');
+        toast.error('Erreur lors du chargement des consultations');
+      }
     } finally {
       setLoading(false);
     }

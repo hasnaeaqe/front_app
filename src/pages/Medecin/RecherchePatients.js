@@ -4,6 +4,7 @@ import DashboardLayout from '../../components/Layout/DashboardLayout';
 import { Card, Button } from '../../components/UI';
 import { Search, User, Eye, Plus } from 'lucide-react';
 import medecinService from '../../services/medecinService';
+import patientService from '../../services/patientService';
 import toast from 'react-hot-toast';
 
 const RecherchePatients = () => {
@@ -23,10 +24,20 @@ const RecherchePatients = () => {
 
     try {
       setLoading(true);
-      const response = await medecinService.searchPatients(type, trimmedQuery);
-      setPatients(response.data);
+      let response;
       
-      if (response.data.length === 0) {
+      try {
+        // Try medecinService first
+        response = await medecinService.searchPatients(type, trimmedQuery);
+      } catch (medecinError) {
+        // If medecin service fails, fall back to patient service
+        console.log('Medecin search service unavailable, using patient service');
+        response = await patientService.search(trimmedQuery);
+      }
+      
+      setPatients(response.data || []);
+      
+      if (!response.data || response.data.length === 0) {
         toast.info('Aucun patient trouvé');
       }
     } catch (error) {
