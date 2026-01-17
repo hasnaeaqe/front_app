@@ -29,6 +29,9 @@ public class Cabinet {
 
     private String email;
 
+    @Column(columnDefinition = "BOOLEAN DEFAULT true")
+    private Boolean actif = true;
+
     @Column(name = "date_creation", updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime dateCreation;
 
@@ -36,6 +39,9 @@ public class Cabinet {
     protected void onCreate() {
         if (dateCreation == null) {
             dateCreation = LocalDateTime.now();
+        }
+        if (actif == null) {
+            actif = true;
         }
     }
 }

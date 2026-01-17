@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface MedicamentRepository extends JpaRepository<Medicament, Long> {
     List<Medicament> findByNomContainingIgnoreCase(String nom);
+    
+    List<Medicament> findByNomContainingIgnoreCaseOrCategorieContainingIgnoreCase(String nom, String categorie);
 }

@@ -14,6 +14,7 @@ const Badge = ({ children, variant = 'default', className = '' }) => {
     danger: 'bg-red-100 text-red-800 border-red-200',
     warning: 'bg-yellow-100 text-yellow-800 border-yellow-200',
     info: 'bg-blue-100 text-blue-800 border-blue-200',
+    primary: 'bg-violet-100 text-violet-800 border-violet-200',
     default: 'bg-gray-100 text-gray-800 border-gray-200'
   };
 
@@ -26,7 +27,7 @@ const Badge = ({ children, variant = 'default', className = '' }) => {
 
 Badge.propTypes = {
   children: PropTypes.node.isRequired,
-  variant: PropTypes.oneOf(['success', 'danger', 'warning', 'info', 'default']),
+  variant: PropTypes.oneOf(['success', 'danger', 'warning', 'info', 'primary', 'default']),
   className: PropTypes.string
 };
 
