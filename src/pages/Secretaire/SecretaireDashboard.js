@@ -3,27 +3,66 @@ import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '../../components/Layout/DashboardLayout';
 import { StatCard, Card } from '../../components/UI';
 import { Users, Calendar, DollarSign, Clock, ArrowRight } from 'lucide-react';
+import secretaireService from '../../services/secretaireService';
+import toast from '../../utils/toast';
 
 const SecretaireDashboard = () => {
   const navigate = useNavigate();
-  const [stats] = useState({
-    patientsTotal: 145,
-    rdvAujourdhui: 12,
-    facturesEnAttente: 8,
-    revenuTotal: '24,500'
+  const [stats, setStats] = useState({
+    patientsTotal: 0,
+    rdvAujourdhui: 0,
+    facturesEnAttente: 0,
+    revenuTotal: 0
   });
+  const [rendezVous, setRendezVous] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    // TODO: API call to fetch secretaire statistics
-    // const fetchStats = async () => {
-    //   try {
-    //     const response = await api.get('/api/secretaire/stats');
-    //     setStats(response.data);
-    //   } catch (error) {
-    //     console.error('Erreur lors de la récupération des statistiques:', error);
-    //   }
-    // };
-    // fetchStats();
+    fetchData();
   }, []);
+
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      
+      // Fetch statistics
+      const statsResponse = await secretaireService.getStats();
+      if (statsResponse.data) {
+        setStats(statsResponse.data);
+      }
+      
+      // Fetch today's appointments
+      const rdvResponse = await secretaireService.getRendezVousAujourdhui();
+      if (rdvResponse.data) {
+        setRendezVous(rdvResponse.data.slice(0, 5)); // Only show first 5
+      }
+    } catch (error) {
+      console.error('Erreur lors de la récupération des données:', error);
+      toast.error('Impossible de charger les données du dashboard');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const calculateTimeRemaining = (rdvDate, rdvTime) => {
+    if (!rdvDate || !rdvTime) return 'N/A';
+    
+    const now = new Date();
+    const rdvDateTime = new Date(`${rdvDate}T${rdvTime}`);
+    const diffMs = rdvDateTime - now;
+    
+    if (diffMs < 0) return 'Passé';
+    
+    const diffMins = Math.floor(diffMs / 60000);
+    if (diffMins < 60) return `Dans ${diffMins} min`;
+    
+    const diffHours = Math.floor(diffMins / 60);
+    const remainingMins = diffMins % 60;
+    if (remainingMins > 0) {
+      return `Dans ${diffHours}h${remainingMins}`;
+    }
+    return `Dans ${diffHours}h`;
+  };
 
   const quickActions = [
     {
@@ -100,7 +139,7 @@ const SecretaireDashboard = () => {
           <StatCard
             icon={<DollarSign className="w-8 h-8 text-green-600" />}
             title="Revenu Total"
-            value={`${stats.revenuTotal} MAD`}
+            value={`${stats.revenuTotal?.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0.00'} MAD`}
             subtitle="Ce mois"
             iconBgColor="bg-green-100"
           />
@@ -142,29 +181,37 @@ const SecretaireDashboard = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Card borderColor="violet">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Prochains Rendez-vous</h3>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                <div>
-                  <p className="text-sm font-medium text-gray-900">10:00 - Dr. Alami</p>
-                  <p className="text-xs text-gray-600">Patient: Mohammed Ben Ali</p>
-                </div>
-                <span className="text-xs text-violet-600 font-medium">Dans 30 min</span>
+            {loading ? (
+              <div className="text-center py-4">
+                <p className="text-gray-500">Chargement...</p>
               </div>
-              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                <div>
-                  <p className="text-sm font-medium text-gray-900">11:00 - Dr. Alami</p>
-                  <p className="text-xs text-gray-600">Patient: Fatima Zahra</p>
-                </div>
-                <span className="text-xs text-gray-600 font-medium">Dans 1h30</span>
+            ) : rendezVous.length === 0 ? (
+              <div className="text-center py-4">
+                <p className="text-gray-500">Aucun rendez-vous aujourd'hui</p>
               </div>
-              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                <div>
-                  <p className="text-sm font-medium text-gray-900">14:00 - Dr. Alami</p>
-                  <p className="text-xs text-gray-600">Patient: Ahmed Idrissi</p>
-                </div>
-                <span className="text-xs text-gray-600 font-medium">Dans 4h</span>
+            ) : (
+              <div className="space-y-3">
+                {rendezVous.map((rdv) => (
+                  <div key={rdv.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">
+                        {rdv.heureRdv} - Dr. {rdv.medecinNom || 'N/A'}
+                      </p>
+                      <p className="text-xs text-gray-600">
+                        Patient: {rdv.patientPrenom} {rdv.patientNom}
+                      </p>
+                    </div>
+                    <span className={`text-xs font-medium ${
+                      calculateTimeRemaining(rdv.dateRdv, rdv.heureRdv).includes('Passé') 
+                        ? 'text-gray-500' 
+                        : 'text-violet-600'
+                    }`}>
+                      {calculateTimeRemaining(rdv.dateRdv, rdv.heureRdv)}
+                    </span>
+                  </div>
+                ))}
               </div>
-            </div>
+            )}
           </Card>
 
           <Card borderColor="rose">
