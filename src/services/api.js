@@ -40,9 +40,8 @@ api.interceptors.response.use(
       // Déconnecter l'utilisateur si non authentifié
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      // Note: En production, utiliser React Router pour la navigation
-      // Pour le moment, rechargement simple de la page
-      window.location.reload();
+      // Redirect to login page
+      window.location.href = '/login';
     }
     return Promise.reject(error);
   }

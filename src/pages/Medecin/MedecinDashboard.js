@@ -81,7 +81,7 @@ const MedecinDashboard = () => {
       description: 'Créer et imprimer une ordonnance',
       icon: <Printer className="w-10 h-10 text-green-600" />,
       color: 'green',
-      action: 'print'
+      path: '/medecin/consultations'
     },
     {
       id: 'dossier',
@@ -94,10 +94,7 @@ const MedecinDashboard = () => {
   ];
 
   const handleQuickAction = (action) => {
-    if (action.action === 'print') {
-      // Navigate to patient search to select patient for prescription
-      navigate('/medecin/recherche-patients');
-    } else if (action.path) {
+    if (action.path) {
       navigate(action.path);
     }
   };
