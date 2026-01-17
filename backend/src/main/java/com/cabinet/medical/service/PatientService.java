@@ -87,12 +87,15 @@ public class PatientService {
      * New methods for Medecin module
      */
     public List<Patient> searchByNom(String nom) {
-        return patientRepository.findByNomContainingIgnoreCaseOrPrenomContainingIgnoreCase(nom, nom);
+        return patientRepository.searchByNom(nom);
     }
     
     public Patient searchByCin(String cin) {
-        return patientRepository.findByCin(cin)
-            .orElseThrow(() -> new ResourceNotFoundException("Patient non trouvé avec le CIN: " + cin));
+        List<Patient> patients = patientRepository.searchByCin(cin);
+        if (patients.isEmpty()) {
+            throw new ResourceNotFoundException("Patient non trouvé avec le CIN: " + cin);
+        }
+        return patients.get(0);
     }
     
     public PatientProfilCompletDTO getProfilComplet(Long patientId) {

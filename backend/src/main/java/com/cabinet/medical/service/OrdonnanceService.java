@@ -7,10 +7,19 @@ import com.cabinet.medical.dto.request.OrdonnanceRequest;
 import com.cabinet.medical.entity.*;
 import com.cabinet.medical.exception.ResourceNotFoundException;
 import com.cabinet.medical.repository.*;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.properties.TextAlignment;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.ByteArrayOutputStream;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -123,5 +132,90 @@ public class OrdonnanceService {
             ordonnance.getValideJusquA(),
             medicaments
         );
+    }
+    
+    /**
+     * Generate PDF for ordonnance medicaments
+     */
+    public byte[] generateOrdonnanceMedicamentsPDF(Long ordonnanceId) {
+        Ordonnance ordonnance = findById(ordonnanceId);
+        
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+            PdfWriter writer = new PdfWriter(baos);
+            PdfDocument pdf = new PdfDocument(writer);
+            Document document = new Document(pdf);
+            
+            // En-tête - Cabinet info
+            if (ordonnance.getMedecin().getCabinet() != null) {
+                document.add(new Paragraph("CABINET MÉDICAL " + ordonnance.getMedecin().getCabinet().getNom())
+                    .setFontSize(16).setBold());
+                if (ordonnance.getMedecin().getCabinet().getAdresse() != null) {
+                    document.add(new Paragraph(ordonnance.getMedecin().getCabinet().getAdresse()));
+                }
+                if (ordonnance.getMedecin().getCabinet().getNumTel() != null) {
+                    document.add(new Paragraph("Tél: " + ordonnance.getMedecin().getCabinet().getNumTel()));
+                }
+                document.add(new Paragraph("\n"));
+            }
+            
+            // Médecin info
+            document.add(new Paragraph("Dr " + ordonnance.getMedecin().getNom() + " " + ordonnance.getMedecin().getPrenom())
+                .setFontSize(14).setBold());
+            if (ordonnance.getMedecin().getSpecialite() != null) {
+                document.add(new Paragraph(ordonnance.getMedecin().getSpecialite().getNom()));
+            }
+            document.add(new Paragraph("Date : " + LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))));
+            document.add(new Paragraph("\n"));
+            
+            // Titre
+            document.add(new Paragraph("ORDONNANCE MÉDICALE")
+                .setFontSize(18).setBold().setTextAlignment(TextAlignment.CENTER));
+            document.add(new Paragraph("\n"));
+            
+            // Infos patient
+            Patient patient = ordonnance.getPatient();
+            document.add(new Paragraph("Patient : " + patient.getNom() + " " + patient.getPrenom()).setBold());
+            
+            if (patient.getDateNaissance() != null) {
+                int age = Period.between(patient.getDateNaissance(), LocalDate.now()).getYears();
+                document.add(new Paragraph("Âge : " + age + " ans"));
+            }
+            document.add(new Paragraph("Mutuelle : " + (patient.getTypeMutuelle() != null ? patient.getTypeMutuelle() : "Aucune")));
+            document.add(new Paragraph("\n"));
+            
+            // Liste médicaments
+            List<OrdonnanceMedicament> medicaments = ordonnanceMedicamentRepository.findByOrdonnanceId(ordonnance.getId());
+            
+            for (int index = 0; index < medicaments.size(); index++) {
+                OrdonnanceMedicament om = medicaments.get(index);
+                document.add(new Paragraph((index + 1) + ". " + om.getMedicament().getNom()).setBold());
+                document.add(new Paragraph("   Posologie : " + om.getPosologie()));
+                document.add(new Paragraph("   Durée : " + om.getDuree()));
+                document.add(new Paragraph("   Quantité : " + om.getQuantite()));
+                document.add(new Paragraph("\n"));
+            }
+            
+            // Pied
+            document.add(new Paragraph("\n\n"));
+            if (ordonnance.getValideJusquA() != null) {
+                document.add(new Paragraph("Valide jusqu'au : " + ordonnance.getValideJusquA().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))));
+                document.add(new Paragraph("\n"));
+            }
+            
+            // Signature
+            if (ordonnance.getMedecin().getSignature() != null && !ordonnance.getMedecin().getSignature().isEmpty()) {
+                document.add(new Paragraph("Signature : " + ordonnance.getMedecin().getSignature())
+                    .setTextAlignment(TextAlignment.RIGHT));
+            } else {
+                document.add(new Paragraph("Dr " + ordonnance.getMedecin().getNom())
+                    .setTextAlignment(TextAlignment.RIGHT));
+            }
+            
+            document.close();
+            return baos.toByteArray();
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Erreur lors de la génération du PDF: " + e.getMessage(), e);
+        }
     }
 }

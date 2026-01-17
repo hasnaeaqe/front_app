@@ -6,7 +6,10 @@ import com.cabinet.medical.entity.Ordonnance;
 import com.cabinet.medical.service.OrdonnanceService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -46,5 +49,19 @@ public class OrdonnanceController {
     @GetMapping("/{id}/details")
     public OrdonnanceDTO getOrdonnanceWithDetails(@PathVariable Long id) {
         return ordonnanceService.getOrdonnanceWithMedicaments(id);
+    }
+    
+    /**
+     * Download ordonnance as PDF
+     */
+    @GetMapping("/{id}/pdf")
+    public ResponseEntity<byte[]> downloadOrdonnancePDF(@PathVariable Long id) {
+        byte[] pdfContent = ordonnanceService.generateOrdonnanceMedicamentsPDF(id);
+        
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("attachment", "ordonnance_" + id + ".pdf");
+        
+        return new ResponseEntity<>(pdfContent, headers, HttpStatus.OK);
     }
 }
