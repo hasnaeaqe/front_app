@@ -9,7 +9,7 @@ import Input from '../../components/UI/Input';
 import factureService from '../../services/factureService';
 import patientService from '../../services/patientService';
 import toast from '../../utils/toast';
-import { formatCurrency, formatCurrencyWithSuffix } from '../../utils/currency';
+import { formatCurrency } from '../../utils/currency';
 import { 
   Search, 
   Plus, 
