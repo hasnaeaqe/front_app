@@ -1,5 +1,6 @@
 package com.cabinet.medical.service;
 
+import com.cabinet.medical.dto.NotificationDTO;
 import com.cabinet.medical.dto.PatientEnCoursDTO;
 import com.cabinet.medical.entity.Notification;
 import com.cabinet.medical.entity.Patient;
@@ -11,6 +12,9 @@ import com.cabinet.medical.repository.UtilisateurRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -78,6 +82,28 @@ public class NotificationService {
      */
     public void clearPatientEnCours(Long medecinId) {
         notificationRepository.deleteByDestinataireIdAndType(medecinId, Notification.Type.INFO);
+    }
+
+    /**
+     * Get unread notifications for a user
+     */
+    @Transactional(readOnly = true)
+    public List<NotificationDTO> getUnreadNotifications(Long userId) {
+        return notificationRepository.findByDestinataireIdAndLuFalseOrderByDateCreationDesc(userId)
+            .stream()
+            .map(NotificationDTO::fromEntity)
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * Get all notifications for a user
+     */
+    @Transactional(readOnly = true)
+    public List<NotificationDTO> getAllNotifications(Long userId) {
+        return notificationRepository.findByDestinataireIdOrderByDateCreationDesc(userId)
+            .stream()
+            .map(NotificationDTO::fromEntity)
+            .collect(Collectors.toList());
     }
 
     private String extractCinFromMessage(String message) {

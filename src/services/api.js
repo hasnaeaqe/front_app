@@ -9,12 +9,26 @@ const api = axios.create({
   }
 });
 
-// Intercepteur pour ajouter le token d'authentification
+// Intercepteur pour ajouter le token d'authentification et l'ID utilisateur
 api.interceptors.request.use(config => {
   const token = localStorage.getItem('token');
+  const user = localStorage.getItem('user');
+  
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+  
+  if (user) {
+    try {
+      const userData = JSON.parse(user);
+      if (userData.id) {
+        config.headers['X-User-Id'] = userData.id;
+      }
+    } catch (e) {
+      // Ignore JSON parse errors
+    }
+  }
+  
   return config;
 });
 

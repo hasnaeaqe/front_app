@@ -1,10 +1,14 @@
 package com.cabinet.medical.controller;
 
+import com.cabinet.medical.dto.NotificationDTO;
 import com.cabinet.medical.dto.PatientEnCoursDTO;
 import com.cabinet.medical.service.NotificationService;
+import com.cabinet.medical.security.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/notifications")
@@ -13,6 +17,25 @@ import org.springframework.web.bind.annotation.*;
 public class NotificationController {
 
     private final NotificationService notificationService;
+    private final SecurityUtils securityUtils;
+
+    /**
+     * GET /api/notifications?lu=false - Get unread notifications for current user
+     */
+    @GetMapping
+    public ResponseEntity<List<NotificationDTO>> getNotifications(
+            @RequestParam(defaultValue = "false") Boolean lu) {
+        Long userId = securityUtils.getCurrentUserId();
+        List<NotificationDTO> notifications;
+        
+        if (!lu) {
+            notifications = notificationService.getUnreadNotifications(userId);
+        } else {
+            notifications = notificationService.getAllNotifications(userId);
+        }
+        
+        return ResponseEntity.ok(notifications);
+    }
 
     /**
      * POST /api/notifications/send-patient-to-medecin

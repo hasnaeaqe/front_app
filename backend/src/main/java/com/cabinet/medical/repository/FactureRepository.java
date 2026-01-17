@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -33,10 +34,10 @@ public interface FactureRepository extends JpaRepository<Facture, Long> {
     /**
      * Calculate total revenue for current month by statut
      */
-    @Query("SELECT COALESCE(SUM(f.montant), 0.0) FROM Facture f " +
-           "WHERE f.dateEmission BETWEEN :startDate AND :endDate " +
+    @Query("SELECT COALESCE(SUM(CAST(f.montant AS java.math.BigDecimal)), 0) FROM Facture f " +
+           "WHERE CAST(f.dateEmission AS java.time.LocalDate) BETWEEN :startDate AND :endDate " +
            "AND f.statutPaiement = :statut")
-    Double findMonthlyRevenue(@Param("startDate") LocalDate startDate, 
+    BigDecimal findMonthlyRevenue(@Param("startDate") LocalDate startDate, 
                               @Param("endDate") LocalDate endDate,
                               @Param("statut") Facture.StatutPaiement statut);
     
@@ -44,6 +45,7 @@ public interface FactureRepository extends JpaRepository<Facture, Long> {
      * Helper method - get total revenue for current month (paid invoices only)
      */
     default Double getMonthlyRevenue(LocalDate startDate, LocalDate endDate) {
-        return findMonthlyRevenue(startDate, endDate, Facture.StatutPaiement.PAYE);
+        BigDecimal result = findMonthlyRevenue(startDate, endDate, Facture.StatutPaiement.PAYE);
+        return result != null ? result.doubleValue() : 0.0;
     }
 }

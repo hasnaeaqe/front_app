@@ -28,7 +28,7 @@ export const NotificationProvider = ({ children }) => {
     if (!isAuthenticated || user?.role !== 'MEDECIN') return;
     
     try {
-      const response = await api.get(`/api/notifications/medecin/${user.id}/patient-encours`);
+      const response = await api.get(`/notifications/medecin/${user.id}/patient-encours`);
       if (response.data) {
         setPatientEnCours(response.data);
       }

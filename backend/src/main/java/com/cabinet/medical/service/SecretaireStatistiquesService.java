@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
@@ -43,12 +44,10 @@ public class SecretaireStatistiquesService {
         YearMonth currentMonth = YearMonth.now();
         LocalDate startOfMonth = currentMonth.atDay(1);
         LocalDate endOfMonth = currentMonth.atEndOfMonth();
-        Double revenuTotal = factureRepository.findMonthlyRevenue(startOfMonth, endOfMonth, Facture.StatutPaiement.PAYE);
+        BigDecimal revenuTotalBigDecimal = factureRepository.findMonthlyRevenue(startOfMonth, endOfMonth, Facture.StatutPaiement.PAYE);
         
-        // Ensure revenuTotal is not null
-        if (revenuTotal == null) {
-            revenuTotal = 0.0;
-        }
+        // Convert BigDecimal to Double and ensure it's not null
+        Double revenuTotal = revenuTotalBigDecimal != null ? revenuTotalBigDecimal.doubleValue() : 0.0;
         
         return new SecretaireStatsDTO(patientsTotal, rdvAujourdhui, facturesEnAttente, revenuTotal);
     }
