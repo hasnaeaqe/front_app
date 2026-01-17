@@ -27,6 +27,7 @@ const DossierMedicalForm = () => {
 
   useEffect(() => {
     fetchDossierMedical();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [patientId]);
 
   const fetchDossierMedical = async () => {

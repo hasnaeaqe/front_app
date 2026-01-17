@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import DashboardLayout from '../../components/Layout/DashboardLayout';
 import { Card, Button, Badge } from '../../components/UI';
-import { User, Calendar, Phone, Mail, MapPin, FileText, ClipboardList, Pill, File, Edit, Plus } from 'lucide-react';
+import { User, Phone, Mail, MapPin, FileText, ClipboardList, Pill, Edit, Plus } from 'lucide-react';
 import medecinService from '../../services/medecinService';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
@@ -17,6 +17,7 @@ const PatientProfil = () => {
 
   useEffect(() => {
     fetchPatientProfil();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [patientId]);
 
   const fetchPatientProfil = async () => {
