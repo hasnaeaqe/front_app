@@ -9,7 +9,7 @@ import Input from '../../components/UI/Input';
 import factureService from '../../services/factureService';
 import patientService from '../../services/patientService';
 import toast from '../../utils/toast';
-import { formatCurrency, formatCurrencyWithSuffix } from '../../utils/currency';
+import { formatCurrency } from '../../utils/currency';
 import { 
   Search, 
   Plus, 
@@ -27,6 +27,7 @@ const FactureList = () => {
   const [filteredFactures, setFilteredFactures] = useState([]);
   const [patients, setPatients] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [stats, setStats] = useState({
     totalEnAttente: 0,
     totalPayeesMois: 0,
@@ -70,6 +71,7 @@ const FactureList = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
+      setError(null);
       
       // Fetch factures
       const facturesResponse = await factureService.getAll();
@@ -90,7 +92,8 @@ const FactureList = () => {
       }
     } catch (error) {
       console.error('Erreur lors du chargement des données:', error);
-      toast.error('Impossible de charger les factures');
+      setError('Impossible de charger les factures');
+      toast.error('Erreur de connexion au serveur');
     } finally {
       setLoading(false);
     }
@@ -298,6 +301,19 @@ const FactureList = () => {
           <h1 className="text-3xl font-bold text-gray-900">Gestion des Factures</h1>
           <p className="text-gray-600 mt-1">Gérer les factures et les paiements</p>
         </div>
+
+        {/* Error Display */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+            <p className="text-red-800 font-medium">{error}</p>
+            <button
+              onClick={fetchData}
+              className="mt-2 text-sm text-red-600 hover:text-red-800 underline"
+            >
+              Réessayer
+            </button>
+          </div>
+        )}
 
         {/* Statistics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">

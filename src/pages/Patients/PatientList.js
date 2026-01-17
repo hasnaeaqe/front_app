@@ -207,7 +207,7 @@ const PatientList = () => {
       toast.success(`Patient ${patient.prenom} ${patient.nom} envoyé au médecin avec succès`);
     } catch (err) {
       console.error('Erreur lors de l\'envoi au médecin:', err);
-      toast.error('Erreur lors de l\'envoi au médecin');
+      toast.error('Erreur lors de l\'envoi au médecin. Veuillez réessayer.');
     }
   };
 

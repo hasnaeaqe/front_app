@@ -4,7 +4,7 @@ const factureService = {
   // Get all factures or filter by status
   getAll: async (statut = null) => {
     try {
-      const url = statut ? `/api/factures?statut=${statut}` : '/api/factures';
+      const url = statut ? `/factures?statut=${statut}` : '/factures';
       const response = await api.get(url);
       return response;
     } catch (error) {
@@ -16,7 +16,7 @@ const factureService = {
   // Get facture by ID
   getById: async (id) => {
     try {
-      const response = await api.get(`/api/factures/${id}`);
+      const response = await api.get(`/factures/${id}`);
       return response;
     } catch (error) {
       console.error('Error fetching facture:', error);
@@ -27,7 +27,7 @@ const factureService = {
   // Get factures by patient
   getByPatient: async (patientId) => {
     try {
-      const response = await api.get(`/api/factures/patient/${patientId}`);
+      const response = await api.get(`/factures/patient/${patientId}`);
       return response;
     } catch (error) {
       console.error('Error fetching patient factures:', error);
@@ -38,7 +38,7 @@ const factureService = {
   // Get facture statistics
   getStats: async () => {
     try {
-      const response = await api.get('/api/factures/stats');
+      const response = await api.get('/factures/stats');
       return response;
     } catch (error) {
       console.error('Error fetching facture stats:', error);
@@ -49,7 +49,7 @@ const factureService = {
   // Create new facture
   create: async (factureData) => {
     try {
-      const response = await api.post('/api/factures', factureData);
+      const response = await api.post('/factures', factureData);
       return response;
     } catch (error) {
       console.error('Error creating facture:', error);
@@ -60,7 +60,7 @@ const factureService = {
   // Mark facture as paid
   payer: async (id) => {
     try {
-      const response = await api.put(`/api/factures/${id}/payer`);
+      const response = await api.put(`/factures/${id}/payer`);
       return response;
     } catch (error) {
       console.error('Error marking facture as paid:', error);
