@@ -63,7 +63,7 @@ const MedecinDashboard = () => {
       description: 'Démarrer une consultation',
       icon: <Stethoscope className="w-10 h-10 text-cyan-600" />,
       color: 'cyan',
-      path: '/medecin/consultations'
+      path: '/medecin/recherche-patients'
     },
     {
       id: 'ordonnance',
@@ -72,13 +72,21 @@ const MedecinDashboard = () => {
       icon: <Printer className="w-10 h-10 text-green-600" />,
       color: 'green',
       action: 'print'
+    },
+    {
+      id: 'dossier',
+      title: 'Dossier Médical',
+      description: 'Accéder aux dossiers médicaux',
+      icon: <Clock className="w-10 h-10 text-rose-600" />,
+      color: 'rose',
+      path: '/medecin/recherche-patients'
     }
   ];
 
   const handleQuickAction = (action) => {
     if (action.action === 'print') {
-      // TODO: Implement print ordonnance logic
-      console.log('Imprimer ordonnance');
+      // Navigate to patient search to select patient for prescription
+      navigate('/medecin/recherche-patients');
     } else if (action.path) {
       navigate(action.path);
     }
@@ -193,7 +201,7 @@ const MedecinDashboard = () => {
         {/* Quick Actions Section */}
         <div>
           <h2 className="text-xl font-semibold text-gray-900 mb-4">Accès Rapide</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {quickActions.map((action) => (
               <div
                 key={action.id}

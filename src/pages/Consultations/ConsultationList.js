@@ -53,80 +53,21 @@ const ConsultationList = () => {
       setLoading(true);
       setError(null);
       
-      // TODO: Replace with actual API call when backend is ready
-      // const response = await consultationService.getAll({ medecinId: user.id });
-      // setConsultations(response.data);
-      
-      // Mock data for development
-      const mockConsultations = [
-        {
-          id: 1,
-          date: '2024-01-16',
-          heure: '09:00',
-          patient: {
-            nom: 'Alami',
-            prenom: 'Mohammed',
-            cin: 'AB123456'
-          },
-          diagnostic: 'Grippe saisonnière avec fièvre persistante et toux',
-          duree: 30,
-          statut: 'Terminée'
-        },
-        {
-          id: 2,
-          date: '2024-01-16',
-          heure: '10:30',
-          patient: {
-            nom: 'Benali',
-            prenom: 'Fatima',
-            cin: 'CD789012'
-          },
-          diagnostic: 'Contrôle de tension artérielle - Hypertension',
-          duree: 20,
-          statut: 'Terminée'
-        },
-        {
-          id: 3,
-          date: '2024-01-16',
-          heure: '14:00',
-          patient: {
-            nom: 'Tazi',
-            prenom: 'Ahmed',
-            cin: 'EF345678'
-          },
-          diagnostic: 'Consultation en cours...',
-          duree: 0,
-          statut: 'En cours'
-        },
-        {
-          id: 4,
-          date: '2024-01-15',
-          heure: '11:00',
-          patient: {
-            nom: 'Idrissi',
-            prenom: 'Amina',
-            cin: 'GH901234'
-          },
-          diagnostic: 'Douleurs lombaires chroniques - Recommandation kiné',
-          duree: 25,
-          statut: 'Terminée'
-        },
-        {
-          id: 5,
-          date: '2024-01-15',
-          heure: '15:30',
-          patient: {
-            nom: 'Karim',
-            prenom: 'Youssef',
-            cin: 'IJ567890'
-          },
-          diagnostic: 'Allergie saisonnière - Prescription antihistaminique',
-          duree: 15,
-          statut: 'Terminée'
+      // Get consultations from database based on user role
+      let response;
+      if (user && user.id) {
+        // If user is a medecin, get consultations for today
+        if (user.role === 'MEDECIN') {
+          response = await consultationService.getAll();
+        } else {
+          // Otherwise get all consultations
+          response = await consultationService.getAll();
         }
-      ];
+      } else {
+        response = await consultationService.getAll();
+      }
       
-      setConsultations(mockConsultations);
+      setConsultations(response.data || []);
     } catch (err) {
       console.error('Error fetching consultations:', err);
       setError('Erreur lors du chargement des consultations');

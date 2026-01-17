@@ -44,26 +44,11 @@ const DossierMedicalView = ({ patientId: propPatientId, embedded = false }) => {
       setLoading(true);
       setError(null);
       
-      // TODO: Replace with actual API call when backend is ready
-      // const response = await dossierMedicalService.getByPatient(patientId);
-      // setDossierMedical(response.data);
-      
-      // Mock data for development
-      const mockDossier = {
-        id: 1,
-        patientId: patientId,
-        antecedentsMedicaux: 'Hypertension artérielle depuis 2018\nDiabète de type 2 diagnostiqué en 2020',
-        antecedentsChirurgicaux: 'Appendicectomie en 2005\nChirurgie du genou en 2019',
-        allergies: 'Pénicilline\nPollen',
-        habitudes: 'Non fumeur\nConsommation d\'alcool occasionnelle\nPratique du sport 2 fois par semaine',
-        diagnosticActuel: 'Suivi régulier pour hypertension et diabète',
-        traitementActuel: 'Amlodipine 5mg - 1cp/jour\nMetformine 850mg - 2cp/jour',
-        observations: 'Patient compliant au traitement\nContrôle régulier des paramètres nécessaire',
-        dateCreation: '2024-01-01',
-        dateModification: '2024-01-15'
-      };
-      
-      setDossierMedical(mockDossier);
+      // Fetch from database using the service
+      const response = await dossierMedicalService.getByPatient(patientId);
+      if (response.data) {
+        setDossierMedical(response.data);
+      }
     } catch (err) {
       console.error('Error fetching dossier medical:', err);
       setError('Erreur lors du chargement du dossier médical');
