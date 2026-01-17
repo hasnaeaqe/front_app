@@ -31,10 +31,19 @@ public interface FactureRepository extends JpaRepository<Facture, Long> {
     Long countByStatutPaiement(Facture.StatutPaiement statut);
     
     /**
-     * Calculate total revenue for current month
+     * Calculate total revenue for current month by statut
      */
     @Query("SELECT COALESCE(SUM(f.montant), 0.0) FROM Facture f " +
            "WHERE f.dateEmission BETWEEN :startDate AND :endDate " +
-           "AND f.statutPaiement = 'PAYE'")
-    Double sumRevenuByMonth(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+           "AND f.statutPaiement = :statut")
+    Double findMonthlyRevenue(@Param("startDate") LocalDate startDate, 
+                              @Param("endDate") LocalDate endDate,
+                              @Param("statut") Facture.StatutPaiement statut);
+    
+    /**
+     * Helper method - get total revenue for current month (paid invoices only)
+     */
+    default Double getMonthlyRevenue(LocalDate startDate, LocalDate endDate) {
+        return findMonthlyRevenue(startDate, endDate, Facture.StatutPaiement.PAYE);
+    }
 }

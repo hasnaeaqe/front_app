@@ -43,7 +43,7 @@ public class SecretaireStatistiquesService {
         YearMonth currentMonth = YearMonth.now();
         LocalDate startOfMonth = currentMonth.atDay(1);
         LocalDate endOfMonth = currentMonth.atEndOfMonth();
-        Double revenuTotal = factureRepository.sumRevenuByMonth(startOfMonth, endOfMonth);
+        Double revenuTotal = factureRepository.findMonthlyRevenue(startOfMonth, endOfMonth, Facture.StatutPaiement.PAYE);
         
         // Ensure revenuTotal is not null
         if (revenuTotal == null) {

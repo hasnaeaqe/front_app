@@ -30,13 +30,13 @@ const SecretaireDashboard = () => {
       
       // Fetch statistics
       const statsResponse = await secretaireService.getStats();
-      if (statsResponse.data) {
+      if (statsResponse && statsResponse.data) {
         setStats(statsResponse.data);
       }
       
       // Fetch today's appointments
       const rdvResponse = await secretaireService.getRendezVousAujourdhui();
-      if (rdvResponse.data) {
+      if (rdvResponse && Array.isArray(rdvResponse.data)) {
         setRendezVous(rdvResponse.data.slice(0, 5)); // Only show first 5
       }
     } catch (error) {
