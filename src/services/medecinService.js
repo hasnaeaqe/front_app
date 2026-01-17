@@ -75,6 +75,13 @@ const medecinService = {
   getAllMedicaments: () => {
     return api.get('/api/medicaments');
   },
+  
+  // PDF download
+  downloadOrdonnancePDF: (ordonnanceId) => {
+    return api.get(`/api/ordonnances/${ordonnanceId}/pdf`, {
+      responseType: 'blob'
+    });
+  },
 };
 
 export default medecinService;

@@ -2,8 +2,11 @@ package com.cabinet.medical.repository;
 
 import com.cabinet.medical.entity.Facture;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,4 +15,13 @@ public interface FactureRepository extends JpaRepository<Facture, Long> {
     Optional<Facture> findByNumero(String numero);
     List<Facture> findByPatientId(Long patientId);
     List<Facture> findByStatutPaiement(Facture.StatutPaiement statut);
+    
+    /**
+     * Calculate total revenue for a medecin on a specific date
+     */
+    @Query("SELECT COALESCE(SUM(f.montant), 0.0) FROM Facture f " +
+           "JOIN f.consultation c " +
+           "WHERE c.medecin.id = :medecinId " +
+           "AND DATE(f.dateEmission) = :date")
+    Double sumRevenuByMedecinIdAndDate(@Param("medecinId") Long medecinId, @Param("date") LocalDate date);
 }

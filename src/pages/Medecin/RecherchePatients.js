@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '../../components/Layout/DashboardLayout';
 import { Card, Button } from '../../components/UI';
@@ -13,17 +13,17 @@ const RecherchePatients = () => {
   const [patients, setPatients] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const handleSearch = async (e) => {
-    e.preventDefault();
-    
-    if (!searchQuery.trim()) {
-      toast.error('Veuillez entrer un terme de recherche');
+  // Debounced search function
+  const performSearch = useCallback(async (type, query) => {
+    const trimmedQuery = query.trim();
+    if (!trimmedQuery || trimmedQuery.length < 2) {
+      setPatients([]);
       return;
     }
 
     try {
       setLoading(true);
-      const response = await medecinService.searchPatients(searchType, searchQuery);
+      const response = await medecinService.searchPatients(type, trimmedQuery);
       setPatients(response.data);
       
       if (response.data.length === 0) {
@@ -32,9 +32,31 @@ const RecherchePatients = () => {
     } catch (error) {
       console.error('Erreur lors de la recherche:', error);
       toast.error('Erreur lors de la recherche des patients');
+      setPatients([]);
     } finally {
       setLoading(false);
     }
+  }, []);
+
+  // Debounce search when query changes
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      performSearch(searchType, searchQuery);
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchQuery, searchType, performSearch]);
+
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    
+    if (!searchQuery.trim()) {
+      toast.error('Veuillez entrer un terme de recherche');
+      return;
+    }
+
+    // Immediate search on form submit
+    performSearch(searchType, searchQuery);
   };
 
   const handleViewProfile = (patientId) => {
