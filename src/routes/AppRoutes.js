@@ -5,15 +5,14 @@ import { NotificationProvider } from '../context/NotificationContext';
 import ProtectedRoute from './ProtectedRoute';
 import Login from '../pages/Auth/Login';
 import AdminDashboard from '../pages/Admin/AdminDashboard';
+import CabinetList from '../pages/Admin/CabinetList';
+import CompteList from '../pages/Admin/CompteList';
+import MedicamentList from '../pages/Admin/MedicamentList';
 import SecretaireDashboard from '../pages/Secretaire/SecretaireDashboard';
 import MedecinDashboard from '../pages/Medecin/MedecinDashboard';
 import RendezVousList from '../pages/RendezVous/RendezVousList';
 
 // Placeholder components - will be created later
-const CabinetList = () => <div className="p-6"><h1 className="text-2xl font-bold">Gestion des Cabinets</h1></div>;
-const CompteList = () => <div className="p-6"><h1 className="text-2xl font-bold">Gestion des Comptes</h1></div>;
-const MedicamentList = () => <div className="p-6"><h1 className="text-2xl font-bold">Gestion des Médicaments</h1></div>;
-
 const PatientList = () => <div className="p-6"><h1 className="text-2xl font-bold">Gestion des Patients</h1></div>;
 const PatientProfile = () => <div className="p-6"><h1 className="text-2xl font-bold">Profil Patient</h1></div>;
 const FactureList = () => <div className="p-6"><h1 className="text-2xl font-bold">Facturation</h1></div>;

@@ -2,76 +2,94 @@ import React, { useState, useEffect } from 'react';
 import DashboardLayout from '../../components/Layout/DashboardLayout';
 import { StatCard, Card, Badge } from '../../components/UI';
 import { Building2, Users, Pill, Activity, Plus, CheckCircle, List } from 'lucide-react';
+import adminService from '../../services/adminService';
 
 const AdminDashboard = () => {
-  const [stats] = useState({
-    cabinetsActifs: 12,
-    cabinetsTotal: 15,
-    comptesUtilisateurs: 24,
-    comptesMax: 30,
-    medicaments: 150,
-    servicesActifs: 8
+  const [stats, setStats] = useState({
+    cabinetsActifs: 0,
+    cabinetsTotal: 0,
+    comptesUtilisateurs: 0,
+    medicaments: 0,
+    servicesActifs: 0
   });
 
-  const [recentCabinets] = useState([
-    { id: 1, nom: 'Cabinet Dr. Alami', localisation: 'Casablanca, Maarif', statut: 'Actif' },
-    { id: 2, nom: 'Cabinet Dr. Bennis', localisation: 'Rabat, Agdal', statut: 'Actif' },
-    { id: 3, nom: 'Cabinet Dr. Chraibi', localisation: 'Marrakech, Gueliz', statut: 'Inactif' }
-  ]);
-
-  const [recentActivity] = useState([
-    { id: 1, type: 'cabinet', text: 'Nouveau cabinet créé: Cabinet Dr. Alami', time: 'Il y a 2 heures' },
-    { id: 2, type: 'users', text: '3 nouveaux comptes créés', time: 'Il y a 4 heures' },
-    { id: 3, type: 'medicaments', text: 'Liste médicaments mise à jour', time: 'Il y a 1 jour' }
-  ]);
+  const [recentCabinets, setRecentCabinets] = useState([]);
+  const [recentActivity, setRecentActivity] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // TODO: API call to fetch admin statistics
-    // const fetchStats = async () => {
-    //   try {
-    //     const response = await api.get('/api/admin/stats');
-    //     setStats(response.data);
-    //   } catch (error) {
-    //     console.error('Erreur lors de la récupération des statistiques:', error);
-    //   }
-    // };
-    // fetchStats();
-
-    // TODO: API call to fetch recent cabinets
-    // const fetchRecentCabinets = async () => {
-    //   try {
-    //     const response = await api.get('/api/cabinets?recent=true');
-    //     setRecentCabinets(response.data);
-    //   } catch (error) {
-    //     console.error('Erreur lors de la récupération des cabinets récents:', error);
-    //   }
-    // };
-    // fetchRecentCabinets();
-
-    // TODO: API call to fetch recent activity
-    // const fetchActivity = async () => {
-    //   try {
-    //     const response = await api.get('/api/admin/activity');
-    //     setRecentActivity(response.data);
-    //   } catch (error) {
-    //     console.error('Erreur lors de la récupération de l\'activité:', error);
-    //   }
-    // };
-    // fetchActivity();
+    fetchData();
   }, []);
+
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      
+      // Charger les statistiques
+      const statsResponse = await adminService.getStats();
+      setStats(statsResponse.data);
+      
+      // Charger les cabinets récents
+      const cabinetsResponse = await adminService.getCabinetsRecents();
+      setRecentCabinets(cabinetsResponse.data);
+      
+      // Charger l'activité récente
+      const activityResponse = await adminService.getActiviteRecente();
+      setRecentActivity(activityResponse.data);
+    } catch (error) {
+      console.error('Erreur lors de la récupération des données:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const getActivityIcon = (type) => {
     switch (type) {
-      case 'cabinet':
+      case 'CREATION_CABINET':
+      case 'MODIFICATION_CABINET':
+      case 'SUPPRESSION_CABINET':
+      case 'TOGGLE_CABINET':
         return <Plus className="w-4 h-4 text-violet-600" />;
-      case 'users':
+      case 'CREATION_COMPTE':
+      case 'MODIFICATION_COMPTE':
+      case 'SUPPRESSION_COMPTE':
+      case 'TOGGLE_COMPTE':
         return <CheckCircle className="w-4 h-4 text-green-600" />;
-      case 'medicaments':
+      case 'CREATION_MEDICAMENT':
+      case 'MODIFICATION_MEDICAMENT':
+      case 'SUPPRESSION_MEDICAMENT':
         return <List className="w-4 h-4 text-cyan-600" />;
       default:
         return <Activity className="w-4 h-4 text-gray-600" />;
     }
   };
+
+  const formatTimeAgo = (dateString) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 60) {
+      return `Il y a ${diffMins} minute${diffMins > 1 ? 's' : ''}`;
+    } else if (diffHours < 24) {
+      return `Il y a ${diffHours} heure${diffHours > 1 ? 's' : ''}`;
+    } else {
+      return `Il y a ${diffDays} jour${diffDays > 1 ? 's' : ''}`;
+    }
+  };
+
+  if (loading) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-gray-600">Chargement...</div>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>
@@ -94,7 +112,7 @@ const AdminDashboard = () => {
           <StatCard
             icon={<Users className="w-8 h-8 text-cyan-600" />}
             title="Comptes Utilisateurs"
-            value={`${stats.comptesUtilisateurs} / ${stats.comptesMax}`}
+            value={stats.comptesUtilisateurs}
             subtitle="Utilisateurs actifs"
             iconBgColor="bg-cyan-100"
           />
@@ -129,26 +147,40 @@ const AdminDashboard = () => {
                       Localisation
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Médecins
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Statut
                     </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
-                  {recentCabinets.map((cabinet) => (
-                    <tr key={cabinet.id} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-4 py-3 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">{cabinet.nom}</div>
-                      </td>
-                      <td className="px-4 py-3 whitespace-nowrap">
-                        <div className="text-sm text-gray-600">{cabinet.localisation}</div>
-                      </td>
-                      <td className="px-4 py-3 whitespace-nowrap">
-                        <Badge variant={cabinet.statut === 'Actif' ? 'success' : 'default'}>
-                          {cabinet.statut}
-                        </Badge>
+                  {recentCabinets.length > 0 ? (
+                    recentCabinets.map((cabinet) => (
+                      <tr key={cabinet.id} className="hover:bg-gray-50 transition-colors">
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <div className="text-sm font-medium text-gray-900">{cabinet.nom}</div>
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <div className="text-sm text-gray-600">{cabinet.adresse || 'N/A'}</div>
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <div className="text-sm text-gray-600">{cabinet.nombreMedecins}</div>
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <Badge variant={cabinet.actif ? 'success' : 'default'}>
+                            {cabinet.actif ? 'Actif' : 'Inactif'}
+                          </Badge>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="4" className="px-4 py-8 text-center text-gray-500">
+                        Aucun cabinet récent
                       </td>
                     </tr>
-                  ))}
+                  )}
                 </tbody>
               </table>
             </div>
@@ -160,17 +192,28 @@ const AdminDashboard = () => {
           <h2 className="text-xl font-semibold text-gray-900 mb-4">Activité Récente</h2>
           <Card borderColor="cyan">
             <div className="space-y-4">
-              {recentActivity.map((activity) => (
-                <div key={activity.id} className="flex items-start space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
-                  <div className="flex-shrink-0 mt-1">
-                    {getActivityIcon(activity.type)}
+              {recentActivity.length > 0 ? (
+                recentActivity.map((activity) => (
+                  <div key={activity.id} className="flex items-start space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                    <div className="flex-shrink-0 mt-1">
+                      {getActivityIcon(activity.type)}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-900">{activity.titre}</p>
+                      {activity.description && (
+                        <p className="text-sm text-gray-600 mt-0.5">{activity.description}</p>
+                      )}
+                      <p className="text-xs text-gray-500 mt-1">
+                        {formatTimeAgo(activity.dateCreation)}
+                      </p>
+                    </div>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900">{activity.text}</p>
-                    <p className="text-xs text-gray-500 mt-1">{activity.time}</p>
-                  </div>
+                ))
+              ) : (
+                <div className="text-center text-gray-500 py-8">
+                  Aucune activité récente
                 </div>
-              ))}
+              )}
             </div>
           </Card>
         </div>
