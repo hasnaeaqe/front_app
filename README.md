@@ -2,55 +2,98 @@
 
 Application complète de gestion de cabinet médical avec backend Spring Boot et frontend React.
 
-## 🚀 Démarrage Rapide
+## 🏥 Description
 
-### Prérequis
+Système de gestion complet pour cabinets médicaux permettant la gestion des patients, rendez-vous, consultations, ordonnances, et dossiers médicaux. Interface utilisateur moderne et intuitive avec authentification sécurisée multi-rôles.
+
+## 💻 Technologies Utilisées
+
+**Backend:**
+- Java 17
+- Spring Boot 3.2.1
+- Spring Data JPA
+- Spring Security
+- PostgreSQL
+- Maven
+
+**Frontend:**
+- React 19
+- Axios
+- React Router
+- Tailwind CSS
+- Lucide Icons
+
+**Base de données:**
+- PostgreSQL 12+
+
+## 📋 Prérequis
+
+Avant de commencer, assurez-vous d'avoir installé :
 
 - **Java 17+** - [Télécharger Java](https://adoptium.net/)
 - **Maven 3.6+** - [Télécharger Maven](https://maven.apache.org/download.cgi)
 - **PostgreSQL 12+** - [Télécharger PostgreSQL](https://www.postgresql.org/download/)
-- **Node.js 14+** - [Télécharger Node.js](https://nodejs.org/)
+- **Node.js 16+** - [Télécharger Node.js](https://nodejs.org/)
 
-### Installation Complète
+## 🚀 Installation et Configuration
 
-#### 1. Cloner le Projet
+### Étape 1 : Cloner le projet
 
 ```bash
 git clone https://github.com/hasnaeaqe/front_app.git
 cd front_app
 ```
 
-#### 2. Configurer la Base de Données
+### Étape 2 : Configurer la base de données
 
 ```bash
+# Démarrer PostgreSQL
+sudo systemctl start postgresql  # Linux
+# ou brew services start postgresql@14  # macOS
+
 # Se connecter à PostgreSQL
 sudo -u postgres psql
 
 # Créer la base de données
 CREATE DATABASE cabinet_medical;
 
+# Créer un utilisateur (optionnel)
+CREATE USER cabinet_user WITH PASSWORD 'cabinet_password';
+GRANT ALL PRIVILEGES ON DATABASE cabinet_medical TO cabinet_user;
+
 # Quitter
 \q
 
-# Importer le schéma et les données
-psql -U postgres -d cabinet_medical -f database_complete.sql
+# Importer la base de données
+psql -U postgres -d cabinet_medical -f database.sql
 ```
 
-#### 3. Démarrer le Backend
+### Étape 3 : Configurer le Backend
 
 ```bash
 cd backend
+
+# Modifier src/main/resources/application.properties
+# Ajuster les credentials PostgreSQL si nécessaire :
+spring.datasource.url=jdbc:postgresql://localhost:5432/cabinet_medical
+spring.datasource.username=postgres
+spring.datasource.password=votre_mot_de_passe
+
+# Compiler et installer
 mvn clean install
+
+# Démarrer le serveur backend
 mvn spring-boot:run
 ```
 
-Le backend sera accessible sur: **http://localhost:8080**
+Backend accessible sur : **http://localhost:8080**
 
-#### 4. Démarrer le Frontend
-
-Dans un nouveau terminal:
+### Étape 4 : Configurer le Frontend
 
 ```bash
+# Retourner à la racine du projet
+cd ..
+
 # Installer les dépendances
 npm install
 
@@ -58,9 +101,9 @@ npm install
 npm start
 ```
 
-Le frontend sera accessible sur: **http://localhost:3000**
+Frontend accessible sur : **http://localhost:3000**
 
-### Comptes de Test
+## 🔑 Comptes de Test
 
 | Email | Mot de passe | Rôle |
 |-------|--------------|------|
@@ -69,73 +112,58 @@ Le frontend sera accessible sur: **http://localhost:3000**
 | medecin2@cabinet.com | password123 | MEDECIN |
 | secretaire@cabinet.com | password123 | SECRETAIRE |
 
-## 📚 Documentation
+## 🏗️ Architecture du Projet
 
-- **[Documentation Backend](backend/README_BACKEND.md)** - Configuration détaillée du backend Spring Boot
-- **[API REST](#api-rest)** - Liste des endpoints disponibles
-
-## 🏗️ Architecture
-
-### Backend (Spring Boot)
-
-- **Framework**: Spring Boot 3.2.1
-- **Java**: 17
-- **Base de données**: PostgreSQL
-- **Sécurité**: Spring Security + SHA-256
-- **Architecture**: REST API
-
-**Structure:**
 ```
-backend/
-├── src/main/java/com/cabinet/medical/
-│   ├── config/          # Configuration (CORS, Security)
-│   ├── controller/      # REST Controllers
-│   ├── dto/             # Data Transfer Objects
-│   ├── entity/          # JPA Entities
-│   ├── exception/       # Exception Handlers
-│   ├── repository/      # Spring Data Repositories
-│   ├── service/         # Business Logic
-│   └── util/            # Utilities
-└── src/main/resources/
-    └── application.properties
+front_app/
+├── backend/                 # Backend Spring Boot
+│   ├── src/main/java/
+│   ├── src/main/resources/
+│   └── pom.xml
+├── src/                     # Frontend React
+│   ├── components/
+│   ├── pages/
+│   ├── services/
+│   └── App.js
+├── public/
+├── database.sql            # Script SQL complet
+├── package.json
+└── README.md
 ```
 
-### Frontend (React)
+## 📚 Technologies
 
-- **Framework**: React 19
-- **HTTP Client**: Axios
-- **Style**: CSS-in-JS
+### Backend
+- **Java 17**
+- **Spring Boot 3.2.1**
+- **Spring Data JPA** - Accès aux données
+- **Spring Security** - Authentification et autorisation
+- **PostgreSQL** - Base de données relationnelle
+- **Maven** - Gestion des dépendances
 
-**Structure:**
-```
-src/
-├── components/          # React Components
-│   ├── Login.js
-│   └── PatientList.js
-├── services/            # API Services
-│   ├── api.js
-│   ├── authService.js
-│   ├── patientService.js
-│   └── ...
-└── App.js
-```
+### Frontend
+- **React 19** - Framework JavaScript
+- **Axios** - Client HTTP
+- **React Router** - Navigation
+- **Tailwind CSS** - Framework CSS
+- **Lucide Icons** - Icônes
 
-## 🔌 API REST
+### Base de données
+- **PostgreSQL 12+** - Système de gestion de base de données
+
+## 🔌 API REST Principale
 
 ### Authentification
-
 ```
-POST /api/auth/login
+POST /api/auth/login         # Connexion utilisateur
 ```
 
 ### Health Check
-
 ```
-GET /api/health
+GET /api/health              # Vérification de l'état du serveur
 ```
 
 ### Patients
-
 ```
 GET    /api/patients              # Liste tous les patients
 GET    /api/patients/{id}         # Obtenir un patient
@@ -146,7 +174,6 @@ GET    /api/patients/search?query={query}  # Rechercher
 ```
 
 ### Rendez-vous
-
 ```
 GET    /api/rendez-vous                     # Liste tous les RDV
 GET    /api/rendez-vous/{id}                # Obtenir un RDV
@@ -158,7 +185,6 @@ GET    /api/rendez-vous/patient/{id}        # RDV d'un patient
 ```
 
 ### Consultations
-
 ```
 GET    /api/consultations                   # Liste toutes les consultations
 GET    /api/consultations/{id}              # Obtenir une consultation
@@ -167,7 +193,6 @@ GET    /api/consultations/patient/{id}      # Consultations d'un patient
 ```
 
 ### Ordonnances
-
 ```
 GET    /api/ordonnances                     # Liste toutes les ordonnances
 GET    /api/ordonnances/{id}                # Obtenir une ordonnance
@@ -175,143 +200,77 @@ POST   /api/ordonnances                     # Créer une ordonnance
 GET    /api/ordonnances/patient/{id}        # Ordonnances d'un patient
 ```
 
-### Médicaments
-
-```
-GET    /api/medicaments                     # Liste tous les médicaments
-GET    /api/medicaments/{id}                # Obtenir un médicament
-```
-
-## 🔒 Sécurité
-
-- Mots de passe hachés avec **SHA-256**
-- CORS configuré pour `http://localhost:3000`
-- Spring Security en mode stateless
-- Validation des données côté serveur
-
-## 🧪 Tests
-
-### Tester le Backend
-
-```bash
-cd backend
-mvn test
-```
-
-### Tester le Frontend
-
-```bash
-npm test
-```
-
-### Tester l'API avec curl
-
-```bash
-# Health check
-curl http://localhost:8080/api/health
-
-# Login
-curl -X POST http://localhost:8080/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"admin@cabinet.com","password":"password123"}'
-
-# Liste des patients
-curl http://localhost:8080/api/patients
-```
-
-## 🛠️ Développement
-
-### Démarrer en mode développement
-
-Backend avec hot reload:
-```bash
-cd backend
-mvn spring-boot:run -Dspring-boot.run.fork=false
-```
-
-Frontend avec hot reload:
-```bash
-npm start
-```
-
-### Build pour la production
-
-Backend:
-```bash
-cd backend
-mvn clean package
-java -jar target/medical-1.0.0.jar
-```
-
-Frontend:
-```bash
-npm run build
-```
-
-## 📝 Scripts Disponibles
-
-### Frontend
-
-- `npm start` - Démarre le serveur de développement
-- `npm test` - Lance les tests
-- `npm run build` - Build pour la production
-- `npm run eject` - Eject la configuration
+## 🛠️ Commandes Utiles
 
 ### Backend
 
-- `mvn clean install` - Compile et installe
-- `mvn spring-boot:run` - Démarre le serveur
-- `mvn test` - Lance les tests
-- `mvn package` - Créé le JAR
+```bash
+cd backend
+mvn clean install          # Compiler
+mvn spring-boot:run        # Démarrer
+mvn test                   # Tests
+```
 
-## 🐛 Résolution des Problèmes
+### Frontend
 
-### Backend ne démarre pas
+```bash
+npm install                # Installer dépendances
+npm start                  # Démarrer en mode dev
+npm run build              # Build production
+npm test                   # Tests
+```
 
-1. Vérifier que PostgreSQL est démarré
-2. Vérifier les credentials dans `application.properties`
-3. Vérifier que le port 8080 est libre
+## 🐛 Dépannage
 
-### Frontend ne se connecte pas au Backend
+### Problème : Backend ne démarre pas
 
-1. Vérifier que le backend est démarré sur le port 8080
-2. Vérifier la configuration CORS dans `CorsConfig.java`
-3. Ouvrir la console du navigateur pour voir les erreurs
+- Vérifier que PostgreSQL est démarré
+- Vérifier les credentials dans application.properties
+- Vérifier que le port 8080 est libre
 
-### Erreur de connexion à la base de données
+### Problème : Frontend ne se connecte pas
 
-1. Vérifier que PostgreSQL est démarré
-2. Vérifier que la base `cabinet_medical` existe
-3. Vérifier les credentials dans `application.properties`
+- Vérifier que le backend est démarré sur le port 8080
+- Vérifier la configuration CORS
+- Consulter la console du navigateur
 
-## 📦 Fonctionnalités
+### Problème : Erreur de base de données
+
+- Vérifier que PostgreSQL est démarré
+- Vérifier que la base cabinet_medical existe
+- Vérifier que le script database.sql a été exécuté
+
+## 📖 Documentation Détaillée
+
+- [Documentation Backend](backend/README_BACKEND.md) - Configuration détaillée du backend
+- [Composants UI](src/components/UI/README.md) - Documentation des composants React
+- [Pages Patients](src/pages/Patients/README.md) - Documentation du module patients
+
+## ✨ Fonctionnalités
 
 - ✅ Authentification sécurisée (SHA-256)
-- ✅ Gestion des patients (CRUD complet)
+- ✅ Gestion des patients (CRUD)
 - ✅ Gestion des rendez-vous
-- ✅ Gestion des consultations
-- ✅ Gestion des ordonnances
-- ✅ Catalogue de médicaments
-- ✅ Recherche de patients
-- ✅ Interface utilisateur responsive
-- ✅ API REST complète
-- ✅ Documentation complète
-
-## 🤝 Contribution
-
-Les contributions sont les bienvenues! N'hésitez pas à ouvrir une issue ou une pull request.
+- ✅ Consultations médicales
+- ✅ Ordonnances et prescriptions
+- ✅ Dossiers médicaux
+- ✅ Facturation
+- ✅ Documents médicaux
+- ✅ Interface responsive
+- ✅ Multi-rôles (Admin, Médecin, Secrétaire)
 
 ## 📄 Licence
 
-© 2024 Cabinet Médical. Tous droits réservés.
+© 2026 Cabinet Médical. Tous droits réservés.
 
 ## 👥 Support
 
-Pour toute question ou problème, consultez:
-- [Documentation Backend](backend/README_BACKEND.md)
-- Issues GitHub
+Pour toute question :
+- Consulter la documentation détaillée
+- Vérifier les logs de l'application
+- Ouvrir une issue sur GitHub
 
 ---
 
-**Note**: Cette application est conçue pour un environnement de développement. Pour un déploiement en production, des mesures de sécurité supplémentaires doivent être mises en place.
+**Note** : Cette application est conçue pour un environnement de développement. Pour un déploiement en production, des mesures de sécurité supplémentaires sont recommandées.
 
