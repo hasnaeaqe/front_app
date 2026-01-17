@@ -47,8 +47,8 @@ const MedecinDashboard = () => {
         if (response.data.patientsRecents) {
           setRecentPatients(response.data.patientsRecents);
         }
-        if (response.data.prochinesConsultations) {
-          setUpcomingConsultations(response.data.prochinesConsultations);
+        if (response.data.prochainesConsultations) {
+          setUpcomingConsultations(response.data.prochainesConsultations);
         }
       }
     } catch (error) {
