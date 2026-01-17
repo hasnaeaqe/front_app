@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import DashboardLayout from '../../components/Layout/DashboardLayout';
-import { Card, Badge } from '../../components/UI';
+import { Card } from '../../components/UI';
 import { Plus, Search, Edit, Trash2 } from 'lucide-react';
 import adminService from '../../services/adminService';
 import MedicamentModal from '../../components/Admin/MedicamentModal';
