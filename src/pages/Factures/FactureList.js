@@ -9,6 +9,7 @@ import Input from '../../components/UI/Input';
 import factureService from '../../services/factureService';
 import patientService from '../../services/patientService';
 import toast from '../../utils/toast';
+import { formatCurrency, formatCurrencyWithSuffix } from '../../utils/currency';
 import { 
   Search, 
   Plus, 
@@ -173,12 +174,18 @@ const FactureList = () => {
   };
 
   const handleImprimerFacture = (facture) => {
+    // Sanitize data to prevent XSS
+    const sanitize = (str) => {
+      if (!str) return '';
+      return String(str).replace(/[<>]/g, '');
+    };
+    
     // Simple print implementation
     const printWindow = window.open('', '_blank');
     printWindow.document.write(`
       <html>
         <head>
-          <title>Facture ${facture.numero}</title>
+          <title>Facture ${sanitize(facture.numero)}</title>
           <style>
             body { font-family: Arial, sans-serif; padding: 20px; }
             .header { text-align: center; margin-bottom: 30px; }
@@ -192,13 +199,13 @@ const FactureList = () => {
         <body>
           <div class="header">
             <h1>FACTURE</h1>
-            <p>N° ${facture.numero}</p>
+            <p>N° ${sanitize(facture.numero)}</p>
           </div>
           <div class="info">
-            <p><span class="label">Patient:</span> ${facture.patientPrenom} ${facture.patientNom}</p>
-            <p><span class="label">CIN:</span> ${facture.patientCin}</p>
+            <p><span class="label">Patient:</span> ${sanitize(facture.patientPrenom)} ${sanitize(facture.patientNom)}</p>
+            <p><span class="label">CIN:</span> ${sanitize(facture.patientCin)}</p>
             <p><span class="label">Date d'émission:</span> ${new Date(facture.dateEmission).toLocaleDateString('fr-FR')}</p>
-            <p><span class="label">Statut:</span> ${facture.statutPaiement}</p>
+            <p><span class="label">Statut:</span> ${sanitize(facture.statutPaiement)}</p>
           </div>
           <table>
             <tr>
@@ -206,12 +213,12 @@ const FactureList = () => {
               <th>Montant</th>
             </tr>
             <tr>
-              <td>${facture.notes || 'Consultation médicale'}</td>
-              <td>${facture.montant} MAD</td>
+              <td>${sanitize(facture.notes || 'Consultation médicale')}</td>
+              <td>${sanitize(facture.montant)} MAD</td>
             </tr>
             <tr>
               <th>Total</th>
-              <th>${facture.montant} MAD</th>
+              <th>${sanitize(facture.montant)} MAD</th>
             </tr>
           </table>
         </body>
@@ -300,7 +307,7 @@ const FactureList = () => {
                 <p className="text-sm text-gray-600">En Attente</p>
                 <p className="text-2xl font-bold text-gray-900">{stats.totalEnAttente}</p>
                 <p className="text-xs text-gray-500 mt-1">
-                  {stats.montantEnAttente?.toLocaleString('fr-FR', { minimumFractionDigits: 2 })} MAD
+                  {formatCurrency(stats.montantEnAttente)} MAD
                 </p>
               </div>
               <Clock className="w-10 h-10 text-orange-500" />
@@ -313,7 +320,7 @@ const FactureList = () => {
                 <p className="text-sm text-gray-600">Payées ce mois</p>
                 <p className="text-2xl font-bold text-gray-900">{stats.totalPayeesMois}</p>
                 <p className="text-xs text-gray-500 mt-1">
-                  {stats.montantEncaisseMois?.toLocaleString('fr-FR', { minimumFractionDigits: 2 })} MAD
+                  {formatCurrency(stats.montantEncaisseMois)} MAD
                 </p>
               </div>
               <CheckCircle className="w-10 h-10 text-green-500" />

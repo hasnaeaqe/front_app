@@ -5,6 +5,7 @@ import { StatCard, Card } from '../../components/UI';
 import { Users, Calendar, DollarSign, Clock, ArrowRight } from 'lucide-react';
 import secretaireService from '../../services/secretaireService';
 import toast from '../../utils/toast';
+import { formatCurrencyWithSuffix } from '../../utils/currency';
 
 const SecretaireDashboard = () => {
   const navigate = useNavigate();
@@ -139,7 +140,7 @@ const SecretaireDashboard = () => {
           <StatCard
             icon={<DollarSign className="w-8 h-8 text-green-600" />}
             title="Revenu Total"
-            value={`${stats.revenuTotal?.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0.00'} MAD`}
+            value={formatCurrencyWithSuffix(stats.revenuTotal || 0)}
             subtitle="Ce mois"
             iconBgColor="bg-green-100"
           />
