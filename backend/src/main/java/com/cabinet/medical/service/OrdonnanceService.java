@@ -140,8 +140,8 @@ public class OrdonnanceService {
     public byte[] generateOrdonnanceMedicamentsPDF(Long ordonnanceId) {
         Ordonnance ordonnance = findById(ordonnanceId);
         
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
             PdfWriter writer = new PdfWriter(baos);
             PdfDocument pdf = new PdfDocument(writer);
             Document document = new Document(pdf);
@@ -187,14 +187,13 @@ public class OrdonnanceService {
             // Liste médicaments
             List<OrdonnanceMedicament> medicaments = ordonnanceMedicamentRepository.findByOrdonnanceId(ordonnance.getId());
             
-            int i = 1;
-            for (OrdonnanceMedicament om : medicaments) {
-                document.add(new Paragraph(i + ". " + om.getMedicament().getNom()).setBold());
+            for (int index = 0; index < medicaments.size(); index++) {
+                OrdonnanceMedicament om = medicaments.get(index);
+                document.add(new Paragraph((index + 1) + ". " + om.getMedicament().getNom()).setBold());
                 document.add(new Paragraph("   Posologie : " + om.getPosologie()));
                 document.add(new Paragraph("   Durée : " + om.getDuree()));
                 document.add(new Paragraph("   Quantité : " + om.getQuantite()));
                 document.add(new Paragraph("\n"));
-                i++;
             }
             
             // Pied
@@ -215,7 +214,7 @@ public class OrdonnanceService {
             
             document.close();
             return baos.toByteArray();
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             throw new RuntimeException("Erreur lors de la génération du PDF: " + e.getMessage(), e);
         }
     }

@@ -15,14 +15,15 @@ const RecherchePatients = () => {
 
   // Debounced search function
   const performSearch = useCallback(async (type, query) => {
-    if (!query.trim() || query.trim().length < 2) {
+    const trimmedQuery = query.trim();
+    if (!trimmedQuery || trimmedQuery.length < 2) {
       setPatients([]);
       return;
     }
 
     try {
       setLoading(true);
-      const response = await medecinService.searchPatients(type, query.trim());
+      const response = await medecinService.searchPatients(type, trimmedQuery);
       setPatients(response.data);
       
       if (response.data.length === 0) {
