@@ -1,5 +1,6 @@
 package com.cabinet.medical.controller;
 
+import com.cabinet.medical.dto.ConsultationDTO;
 import com.cabinet.medical.dto.request.ConsultationRequest;
 import com.cabinet.medical.entity.Consultation;
 import com.cabinet.medical.service.ConsultationService;
@@ -13,6 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/consultations")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 public class ConsultationController {
 
     private final ConsultationService consultationService;
@@ -36,5 +38,13 @@ public class ConsultationController {
     @GetMapping("/patient/{patientId}")
     public List<Consultation> getConsultationsByPatient(@PathVariable Long patientId) {
         return consultationService.findByPatient(patientId);
+    }
+    
+    /**
+     * New endpoints for Medecin module
+     */
+    @GetMapping("/medecin/{medecinId}/today")
+    public List<ConsultationDTO> getConsultationsByMedecinToday(@PathVariable Long medecinId) {
+        return consultationService.findByMedecinToday(medecinId);
     }
 }

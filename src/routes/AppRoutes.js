@@ -10,17 +10,17 @@ import CompteList from '../pages/Admin/CompteList';
 import MedicamentList from '../pages/Admin/MedicamentList';
 import SecretaireDashboard from '../pages/Secretaire/SecretaireDashboard';
 import MedecinDashboard from '../pages/Medecin/MedecinDashboard';
+import RecherchePatients from '../pages/Medecin/RecherchePatients';
+import PatientProfil from '../pages/Medecin/PatientProfil';
+import ConsultationForm from '../pages/Medecin/ConsultationForm';
+import DossierMedicalForm from '../pages/Medecin/DossierMedicalForm';
 import RendezVousList from '../pages/RendezVous/RendezVousList';
 
 // Placeholder components - will be created later
 const PatientList = () => <div className="p-6"><h1 className="text-2xl font-bold">Gestion des Patients</h1></div>;
 const PatientProfile = () => <div className="p-6"><h1 className="text-2xl font-bold">Profil Patient</h1></div>;
 const FactureList = () => <div className="p-6"><h1 className="text-2xl font-bold">Facturation</h1></div>;
-
-const RecherchePatients = () => <div className="p-6"><h1 className="text-2xl font-bold">Recherche Patients</h1></div>;
 const ConsultationList = () => <div className="p-6"><h1 className="text-2xl font-bold">Consultations</h1></div>;
-const ConsultationForm = () => <div className="p-6"><h1 className="text-2xl font-bold">Nouvelle Consultation</h1></div>;
-const DossierMedicalForm = () => <div className="p-6"><h1 className="text-2xl font-bold">Dossier Médical</h1></div>;
 
 const AppRoutes = () => {
   return (
@@ -128,7 +128,15 @@ const AppRoutes = () => {
               path="/medecin/patients/:id"
               element={
                 <ProtectedRoute allowedRoles={['MEDECIN']}>
-                  <PatientProfile />
+                  <PatientProfil />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/medecin/patients/:patientId"
+              element={
+                <ProtectedRoute allowedRoles={['MEDECIN']}>
+                  <PatientProfil />
                 </ProtectedRoute>
               }
             />
