@@ -4,7 +4,7 @@ const secretaireService = {
   // Get dashboard statistics
   getStats: async () => {
     try {
-      const response = await api.get('/api/secretaire/stats');
+      const response = await api.get('/secretaire/stats');
       return response;
     } catch (error) {
       console.error('Error fetching secretaire stats:', error);
@@ -15,7 +15,7 @@ const secretaireService = {
   // Get today's appointments
   getRendezVousAujourdhui: async () => {
     try {
-      const response = await api.get('/api/secretaire/rendez-vous/aujourdhui');
+      const response = await api.get('/secretaire/rendez-vous/aujourdhui');
       return response;
     } catch (error) {
       console.error('Error fetching today\'s appointments:', error);

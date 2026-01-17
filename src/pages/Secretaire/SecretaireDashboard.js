@@ -17,6 +17,7 @@ const SecretaireDashboard = () => {
   });
   const [rendezVous, setRendezVous] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     fetchData();
@@ -25,6 +26,7 @@ const SecretaireDashboard = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
+      setError(null);
       
       // Fetch statistics
       const statsResponse = await secretaireService.getStats();
@@ -39,7 +41,8 @@ const SecretaireDashboard = () => {
       }
     } catch (error) {
       console.error('Erreur lors de la récupération des données:', error);
-      toast.error('Impossible de charger les données du dashboard');
+      setError('Impossible de charger les données du dashboard');
+      toast.error('Erreur de connexion au serveur');
     } finally {
       setLoading(false);
     }
@@ -113,6 +116,19 @@ const SecretaireDashboard = () => {
           <h1 className="text-3xl font-bold text-gray-900">Tableau de Bord</h1>
           <p className="text-gray-600 mt-1">Bienvenue sur votre espace secrétaire</p>
         </div>
+
+        {/* Error Display */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+            <p className="text-red-800 font-medium">{error}</p>
+            <button
+              onClick={fetchData}
+              className="mt-2 text-sm text-red-600 hover:text-red-800 underline"
+            >
+              Réessayer
+            </button>
+          </div>
+        )}
 
         {/* Statistics Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
