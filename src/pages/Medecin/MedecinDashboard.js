@@ -89,7 +89,7 @@ const MedecinDashboard = () => {
       description: 'Accéder aux dossiers médicaux',
       icon: <Clock className="w-10 h-10 text-rose-600" />,
       color: 'rose',
-      path: '/medecin/recherche-patients'
+      path: '/medecin/dossiers-medicaux'
     }
   ];
 

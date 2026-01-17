@@ -13,6 +13,7 @@ import MedecinDashboard from '../pages/Medecin/MedecinDashboard';
 import RecherchePatients from '../pages/Medecin/RecherchePatients';
 import PatientProfil from '../pages/Medecin/PatientProfil';
 import DossierMedicalForm from '../pages/DossierMedical/DossierMedicalForm';
+import DossierMedicalList from '../pages/Medecin/DossierMedicalList';
 import ConsultationForm from '../pages/Consultations/ConsultationForm';
 import ConsultationList from '../pages/Consultations/ConsultationList';
 import RendezVousList from '../pages/RendezVous/RendezVousList';
@@ -111,6 +112,14 @@ const AppRoutes = () => {
               element={
                 <ProtectedRoute allowedRoles={['MEDECIN']}>
                   <MedecinDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/medecin/dossiers-medicaux"
+              element={
+                <ProtectedRoute allowedRoles={['MEDECIN']}>
+                  <DossierMedicalList />
                 </ProtectedRoute>
               }
             />
