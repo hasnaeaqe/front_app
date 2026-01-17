@@ -45,6 +45,21 @@ const ConsultationForm = () => {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
   
+  // Helper function to calculate age
+  const calculateAge = (dateNaissance) => {
+    if (!dateNaissance) return 'N/A';
+    const today = new Date();
+    const birthDate = new Date(dateNaissance);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    
+    return age;
+  };
+  
   // Form data
   const [formData, setFormData] = useState({
     diagnostic: '',
@@ -99,31 +114,19 @@ const ConsultationForm = () => {
       setLoading(true);
       setError(null);
       
-      // TODO: Replace with actual API calls when backend is ready
-      // const patientResponse = await patientService.getById(patientId);
-      // const dossierResponse = await dossierMedicalService.getByPatient(patientId);
+      // Fetch patient data from database
+      const patientResponse = await patientService.getById(patientId);
+      setPatient(patientResponse.data);
       
-      // Mock data for development
-      const mockPatient = {
-        id: patientId,
-        nom: 'Alami',
-        prenom: 'Mohammed',
-        cin: 'AB123456',
-        dateNaissance: '1985-05-15',
-        telephone: '0612345678',
-        mutuelle: 'CNSS',
-        age: 38
-      };
-      
-      const mockDossier = {
-        id: 1,
-        allergies: 'Pénicilline, Pollen',
-        antecedentsMedicaux: 'Hypertension artérielle',
-        lastConsultation: '2024-01-10'
-      };
-      
-      setPatient(mockPatient);
-      setDossierMedical(mockDossier);
+      // Fetch dossier medical from database
+      try {
+        const dossierResponse = await dossierMedicalService.getByPatient(patientId);
+        setDossierMedical(dossierResponse.data);
+      } catch (dossierError) {
+        // Dossier medical may not exist yet, which is OK
+        console.log('No dossier medical found for patient');
+        setDossierMedical(null);
+      }
     } catch (err) {
       console.error('Error fetching patient data:', err);
       setError('Erreur lors du chargement des données du patient');
@@ -137,24 +140,12 @@ const ConsultationForm = () => {
     try {
       setSearchingMeds(true);
       
-      // TODO: Replace with actual API call
-      // const response = await medicamentService.search(medicamentSearch);
-      // setMedicamentOptions(response.data);
-      
-      // Mock data
-      const mockMedicaments = [
-        { id: 1, nom: 'Paracétamol 500mg', description: 'Antalgique et antipyrétique' },
-        { id: 2, nom: 'Ibuprofène 400mg', description: 'Anti-inflammatoire non stéroïdien' },
-        { id: 3, nom: 'Amoxicilline 500mg', description: 'Antibiotique' },
-        { id: 4, nom: 'Doliprane 1000mg', description: 'Antalgique' },
-        { id: 5, nom: 'Aspégic 100mg', description: 'Antiagrégant plaquettaire' }
-      ].filter(med => 
-        med.nom.toLowerCase().includes(medicamentSearch.toLowerCase())
-      );
-      
-      setMedicamentOptions(mockMedicaments);
+      // Fetch from database using the medicament service
+      const response = await medicamentService.search(medicamentSearch);
+      setMedicamentOptions(response.data);
     } catch (err) {
       console.error('Error searching medications:', err);
+      setMedicamentOptions([]);
     } finally {
       setSearchingMeds(false);
     }
@@ -247,13 +238,16 @@ const ConsultationForm = () => {
         statut: 'Terminée'
       };
       
-      // TODO: Replace with actual API calls
-      // const consultationResponse = await consultationService.create(consultationData);
+      // Save consultation to database
+      const consultationResponse = await consultationService.create(consultationData);
+      const consultationId = consultationResponse.data.id;
       
       // Save ordonnances if any
       if (medicaments.length > 0) {
         const ordonnanceMedicaments = {
-          consultationId: 1, // consultationResponse.data.id
+          consultationId: consultationId,
+          patientId: patientId,
+          medecinId: user.id,
           type: 'medicaments',
           medicaments: medicaments.map(m => ({
             medicamentId: m.medicament.id,
@@ -263,7 +257,7 @@ const ConsultationForm = () => {
             quantite: m.quantite
           }))
         };
-        // await ordonnanceService.create(ordonnanceMedicaments);
+        await ordonnanceService.create(ordonnanceMedicaments);
       }
       
       const selectedExamens = Object.entries(examens)
@@ -272,13 +266,15 @@ const ConsultationForm = () => {
       
       if (selectedExamens.length > 0 || autresExamens.trim()) {
         const ordonnanceExamens = {
-          consultationId: 1, // consultationResponse.data.id
+          consultationId: consultationId,
+          patientId: patientId,
+          medecinId: user.id,
           type: 'examens',
           examens: selectedExamens,
           autresExamens: autresExamens,
           notes: examenNotes
         };
-        // await ordonnanceService.create(ordonnanceExamens);
+        await ordonnanceService.create(ordonnanceExamens);
       }
       
       toast.success('Consultation enregistrée avec succès');
@@ -307,7 +303,8 @@ const ConsultationForm = () => {
       patient: {
         nom: patient.nom,
         prenom: patient.prenom,
-        age: patient.age,
+        cin: patient.cin,
+        age: calculateAge(patient.dateNaissance),
         mutuelle: patient.mutuelle
       },
       medicaments: medicaments.map(m => ({
@@ -351,7 +348,8 @@ const ConsultationForm = () => {
       patient: {
         nom: patient.nom,
         prenom: patient.prenom,
-        age: patient.age,
+        cin: patient.cin,
+        age: calculateAge(patient.dateNaissance),
         mutuelle: patient.mutuelle
       },
       examens: selectedExamens,
@@ -423,7 +421,7 @@ const ConsultationForm = () => {
                 <div className="flex items-center space-x-4 mt-1 text-sm text-gray-600">
                   <span>CIN: {patient.cin}</span>
                   <span>•</span>
-                  <span>{patient.age} ans</span>
+                  <span>{calculateAge(patient.dateNaissance)} ans</span>
                   {patient.mutuelle && (
                     <>
                       <span>•</span>

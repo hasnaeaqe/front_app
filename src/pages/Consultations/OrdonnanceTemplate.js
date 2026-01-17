@@ -55,6 +55,8 @@ export const generateOrdonnanceMedicaments = (data) => {
   doc.setFont(undefined, 'normal');
   doc.text(`Patient: ${patient.nom} ${patient.prenom}`, 20, yPos);
   yPos += 6;
+  doc.text(`CIN: ${patient.cin || 'N/A'}`, 20, yPos);
+  yPos += 6;
   doc.text(`Âge: ${patient.age || 'N/A'} ans`, 20, yPos);
   yPos += 6;
   if (patient.mutuelle) {
@@ -168,6 +170,8 @@ export const generateOrdonnanceExamens = (data) => {
   doc.setFontSize(10);
   doc.setFont(undefined, 'normal');
   doc.text(`Patient: ${patient.nom} ${patient.prenom}`, 20, yPos);
+  yPos += 6;
+  doc.text(`CIN: ${patient.cin || 'N/A'}`, 20, yPos);
   yPos += 6;
   doc.text(`Âge: ${patient.age || 'N/A'} ans`, 20, yPos);
   yPos += 6;
