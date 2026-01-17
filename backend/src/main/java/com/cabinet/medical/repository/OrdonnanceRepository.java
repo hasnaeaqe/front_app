@@ -12,4 +12,7 @@ public interface OrdonnanceRepository extends JpaRepository<Ordonnance, Long> {
     List<Ordonnance> findByPatientId(Long patientId);
     List<Ordonnance> findByMedecinId(Long medecinId);
     Optional<Ordonnance> findByConsultationId(Long consultationId);
+    
+    // New method for Medecin module
+    List<Ordonnance> findByPatientIdOrderByDateCreationDesc(Long patientId);
 }

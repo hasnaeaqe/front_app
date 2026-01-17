@@ -1,5 +1,6 @@
 package com.cabinet.medical.controller;
 
+import com.cabinet.medical.dto.OrdonnanceDTO;
 import com.cabinet.medical.dto.request.OrdonnanceRequest;
 import com.cabinet.medical.entity.Ordonnance;
 import com.cabinet.medical.service.OrdonnanceService;
@@ -13,6 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/ordonnances")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 public class OrdonnanceController {
 
     private final OrdonnanceService ordonnanceService;
@@ -36,5 +38,13 @@ public class OrdonnanceController {
     @GetMapping("/patient/{patientId}")
     public List<Ordonnance> getOrdonnancesByPatient(@PathVariable Long patientId) {
         return ordonnanceService.findByPatient(patientId);
+    }
+    
+    /**
+     * New endpoint for Medecin module - Get ordonnance with medicaments details
+     */
+    @GetMapping("/{id}/details")
+    public OrdonnanceDTO getOrdonnanceWithDetails(@PathVariable Long id) {
+        return ordonnanceService.getOrdonnanceWithMedicaments(id);
     }
 }

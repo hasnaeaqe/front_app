@@ -1,5 +1,7 @@
 package com.cabinet.medical.service;
 
+import com.cabinet.medical.dto.OrdonnanceDTO;
+import com.cabinet.medical.dto.OrdonnanceMedicamentDTO;
 import com.cabinet.medical.dto.request.OrdonnanceMedicamentRequest;
 import com.cabinet.medical.dto.request.OrdonnanceRequest;
 import com.cabinet.medical.entity.*;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -74,5 +77,51 @@ public class OrdonnanceService {
 
     public List<Ordonnance> findByPatient(Long patientId) {
         return ordonnanceRepository.findByPatientId(patientId);
+    }
+    
+    /**
+     * New methods for Medecin module
+     */
+    public List<OrdonnanceDTO> findByPatientAsDTO(Long patientId) {
+        return ordonnanceRepository.findByPatientIdOrderByDateCreationDesc(patientId)
+            .stream()
+            .map(this::convertToDTO)
+            .collect(Collectors.toList());
+    }
+    
+    public OrdonnanceDTO getOrdonnanceWithMedicaments(Long ordonnanceId) {
+        Ordonnance ordonnance = findById(ordonnanceId);
+        return convertToDTO(ordonnance);
+    }
+    
+    private OrdonnanceDTO convertToDTO(Ordonnance ordonnance) {
+        // Get medicaments for this ordonnance
+        List<OrdonnanceMedicamentDTO> medicaments = ordonnanceMedicamentRepository
+            .findByOrdonnanceId(ordonnance.getId())
+            .stream()
+            .map(om -> new OrdonnanceMedicamentDTO(
+                om.getId(),
+                om.getMedicament().getNom(),
+                om.getPosologie(),
+                om.getMedicament().getForme(), // Using forme as frequence
+                om.getDuree(),
+                null // instructions - not available in entity
+            ))
+            .collect(Collectors.toList());
+        
+        return new OrdonnanceDTO(
+            ordonnance.getId(),
+            ordonnance.getConsultation() != null ? ordonnance.getConsultation().getId() : null,
+            ordonnance.getPatient().getId(),
+            ordonnance.getPatient().getNom(),
+            ordonnance.getPatient().getPrenom(),
+            ordonnance.getMedecin().getId(),
+            ordonnance.getMedecin().getNom(),
+            ordonnance.getMedecin().getPrenom(),
+            ordonnance.getInstructions(),
+            ordonnance.getDateCreation(),
+            ordonnance.getValideJusquA(),
+            medicaments
+        );
     }
 }
