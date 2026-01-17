@@ -74,7 +74,10 @@ const FactureList = () => {
       setError(null);
       
       // Fetch factures
+      console.log('Tentative fetch factures...');
       const facturesResponse = await factureService.getAll();
+      console.log('Factures reçues:', facturesResponse.data);
+      console.log('Nombre de factures:', facturesResponse.data?.length || 0);
       if (facturesResponse.data) {
         setFactures(facturesResponse.data);
       }
@@ -251,47 +254,49 @@ const FactureList = () => {
   const totalPages = Math.ceil(filteredFactures.length / itemsPerPage);
 
   const columns = [
-    { header: 'N° Facture', accessor: 'numero' },
+    { key: 'numero', label: 'N° Facture' },
     { 
-      header: 'Patient', 
-      accessor: (row) => `${row.patientPrenom || ''} ${row.patientNom || ''}` 
+      key: 'patient',
+      label: 'Patient', 
+      render: (row) => `${row.patientPrenom || ''} ${row.patientNom || ''}` 
     },
     { 
-      header: 'Date Émission', 
-      accessor: (row) => new Date(row.dateEmission).toLocaleDateString('fr-FR') 
+      key: 'dateEmission',
+      label: 'Date Émission', 
+      render: (row) => new Date(row.dateEmission).toLocaleDateString('fr-FR') 
     },
     { 
-      header: 'Montant', 
-      accessor: (row) => `${row.montant} MAD` 
+      key: 'montant',
+      label: 'Montant', 
+      render: (row) => `${row.montant} MAD` 
     },
     { 
-      header: 'Statut', 
-      accessor: (row) => getStatutBadge(row.statutPaiement) 
-    },
-    {
-      header: 'Actions',
-      accessor: (row) => (
-        <div className="flex space-x-2">
-          {row.statutPaiement === 'EN_ATTENTE' && (
-            <Button
-              variant="success"
-              size="sm"
-              onClick={() => handleValiderPaiement(row)}
-            >
-              <CheckCircle className="w-4 h-4" />
-            </Button>
-          )}
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => handleImprimerFacture(row)}
-          >
-            <Printer className="w-4 h-4" />
-          </Button>
-        </div>
-      )
+      key: 'statut',
+      label: 'Statut', 
+      render: (row) => getStatutBadge(row.statutPaiement) 
     }
   ];
+
+  const actionsColumn = (row) => (
+    <div className="flex space-x-2">
+      {row.statutPaiement === 'EN_ATTENTE' && (
+        <Button
+          variant="success"
+          size="sm"
+          onClick={() => handleValiderPaiement(row)}
+        >
+          <CheckCircle className="w-4 h-4" />
+        </Button>
+      )}
+      <Button
+        variant="secondary"
+        size="sm"
+        onClick={() => handleImprimerFacture(row)}
+      >
+        <Printer className="w-4 h-4" />
+      </Button>
+    </div>
+  );
 
   return (
     <DashboardLayout>
@@ -402,7 +407,7 @@ const FactureList = () => {
             </div>
           ) : (
             <>
-              <Table columns={columns} data={currentItems} />
+              <Table columns={columns} data={currentItems} actions={actionsColumn} />
               
               {/* Pagination */}
               {totalPages > 1 && (
