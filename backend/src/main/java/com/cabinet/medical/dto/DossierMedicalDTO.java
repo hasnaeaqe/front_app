@@ -12,6 +12,9 @@ import java.time.LocalDateTime;
 public class DossierMedicalDTO {
     private Long id;
     private Long patientId;
+    private String patientNom;
+    private String patientPrenom;
+    private String patientCin;
     private Long medecinId;
     private String medecinNom;
     private String medecinPrenom;

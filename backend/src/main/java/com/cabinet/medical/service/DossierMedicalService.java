@@ -22,6 +22,16 @@ public class DossierMedicalService {
     private final UtilisateurRepository utilisateurRepository;
 
     /**
+     * Récupérer tous les dossiers médicaux
+     */
+    @Transactional(readOnly = true)
+    public java.util.List<DossierMedicalDTO> getAllDossiersMedicaux() {
+        return dossierMedicalRepository.findAll().stream()
+            .map(this::convertToDTO)
+            .collect(java.util.stream.Collectors.toList());
+    }
+
+    /**
      * Récupérer le dossier médical d'un patient
      */
     @Transactional(readOnly = true)
@@ -80,6 +90,9 @@ public class DossierMedicalService {
         return new DossierMedicalDTO(
             dossier.getId(),
             dossier.getPatient().getId(),
+            dossier.getPatient().getNom(),
+            dossier.getPatient().getPrenom(),
+            dossier.getPatient().getCin(),
             dossier.getMedecin().getId(),
             dossier.getMedecin().getNom(),
             dossier.getMedecin().getPrenom(),

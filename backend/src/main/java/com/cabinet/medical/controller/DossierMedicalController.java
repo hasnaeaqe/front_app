@@ -15,6 +15,16 @@ public class DossierMedicalController {
     private final DossierMedicalService dossierMedicalService;
 
     /**
+     * GET /api/dossiers-medicaux
+     * Récupérer tous les dossiers médicaux
+     */
+    @GetMapping
+    public ResponseEntity<java.util.List<DossierMedicalDTO>> getAllDossiersMedicaux() {
+        java.util.List<DossierMedicalDTO> dossiers = dossierMedicalService.getAllDossiersMedicaux();
+        return ResponseEntity.ok(dossiers);
+    }
+
+    /**
      * GET /api/dossiers-medicaux/patient/{patientId}
      */
     @GetMapping("/patient/{patientId}")
