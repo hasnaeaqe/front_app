@@ -2,6 +2,7 @@ package com.cabinet.medical.controller;
 
 import com.cabinet.medical.dto.request.PatientRequest;
 import com.cabinet.medical.entity.Patient;
+import com.cabinet.medical.exception.ResourceNotFoundException;
 import com.cabinet.medical.service.NotificationService;
 import com.cabinet.medical.service.PatientService;
 import com.cabinet.medical.service.UtilisateurService;
@@ -19,7 +20,7 @@ import java.util.HashMap;
 @RestController
 @RequestMapping("/api/patients")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:3000")
 public class PatientController {
 
     private final PatientService patientService;
@@ -76,6 +77,7 @@ public class PatientController {
             }
             
             // Send notification to first available doctor
+            // TODO: Implement proper load balancing strategy for better patient distribution
             Utilisateur medecin = medecins.get(0);
             notificationService.sendPatientToMedecin(id, medecin.getId());
             
@@ -83,9 +85,15 @@ public class PatientController {
             response.put("message", "Patient envoyé au médecin avec succès");
             response.put("medecinNom", medecin.getNom() + " " + medecin.getPrenom());
             return ResponseEntity.ok(response);
-        } catch (Exception e) {
+        } catch (ResourceNotFoundException e) {
             Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("message", "Erreur lors de l'envoi au médecin: " + e.getMessage());
+            errorResponse.put("message", "Patient non trouvé");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+        } catch (Exception e) {
+            // Log the error for debugging but don't expose internal details
+            System.err.println("Erreur lors de l'envoi au médecin: " + e.getMessage());
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("message", "Erreur lors de l'envoi au médecin");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
