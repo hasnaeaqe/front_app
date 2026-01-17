@@ -29,7 +29,9 @@ const SecretaireDashboard = () => {
       setError(null);
       
       // Fetch statistics
+      console.log('Tentative fetch stats...');
       const statsResponse = await secretaireService.getStats();
+      console.log('Stats reçues:', statsResponse.data);
       if (statsResponse.data) {
         setStats(statsResponse.data);
       }
