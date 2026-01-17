@@ -4,7 +4,6 @@ import DashboardLayout from '../../components/Layout/DashboardLayout';
 import Card from '../../components/UI/Card';
 import Badge from '../../components/UI/Badge';
 import Button from '../../components/UI/Button';
-import Modal from '../../components/UI/Modal';
 import patientService from '../../services/patientService';
 import { useAuth } from '../../context/AuthContext';
 import toast from '../../utils/toast';
@@ -41,12 +40,12 @@ const PatientProfile = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('dossier');
-  const [showEditModal, setShowEditModal] = useState(false);
 
   useEffect(() => {
     if (id) {
       fetchPatientData();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const fetchPatientData = async () => {
@@ -259,6 +258,7 @@ const PatientProfile = () => {
                     </span>
                   </div>
                 </div>
+                {/* TODO: Implement edit functionality
                 <Button
                   variant="outline"
                   onClick={() => setShowEditModal(true)}
@@ -267,6 +267,7 @@ const PatientProfile = () => {
                   <Edit size={18} />
                   Modifier
                 </Button>
+                */}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

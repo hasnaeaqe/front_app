@@ -63,6 +63,7 @@ const FactureList = () => {
 
   useEffect(() => {
     filterFactures();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchTerm, statutFilter, factures]);
 
   const fetchData = async () => {
