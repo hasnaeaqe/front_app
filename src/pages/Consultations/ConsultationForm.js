@@ -29,8 +29,7 @@ import {
   FileText,
   User,
   ArrowLeft,
-  Loader,
-  X
+  Loader
 } from 'lucide-react';
 
 const ConsultationForm = () => {
@@ -99,6 +98,7 @@ const ConsultationForm = () => {
     if (patientId) {
       fetchPatientData();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [patientId]);
 
   useEffect(() => {
@@ -107,6 +107,7 @@ const ConsultationForm = () => {
     } else {
       setMedicamentOptions([]);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [medicamentSearch]);
 
   const fetchPatientData = async () => {

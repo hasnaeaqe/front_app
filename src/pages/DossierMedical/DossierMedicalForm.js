@@ -10,7 +10,6 @@ import toast from '../../utils/toast';
 import { 
   FileText, 
   Save, 
-  Edit,
   ArrowLeft,
   User,
   AlertTriangle,
@@ -60,6 +59,7 @@ const DossierMedicalForm = () => {
     if (patientId) {
       fetchData();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [patientId]);
 
   const fetchData = async () => {
