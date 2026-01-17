@@ -16,11 +16,9 @@ import DossierMedicalForm from '../pages/DossierMedical/DossierMedicalForm';
 import ConsultationForm from '../pages/Consultations/ConsultationForm';
 import ConsultationList from '../pages/Consultations/ConsultationList';
 import RendezVousList from '../pages/RendezVous/RendezVousList';
-
-// Placeholder components - will be created later
-const PatientList = () => <div className="p-6"><h1 className="text-2xl font-bold">Gestion des Patients</h1></div>;
-const PatientProfile = () => <div className="p-6"><h1 className="text-2xl font-bold">Profil Patient</h1></div>;
-const FactureList = () => <div className="p-6"><h1 className="text-2xl font-bold">Facturation</h1></div>;
+import { FactureList } from '../pages/Factures';
+import PatientList from '../pages/Patients/PatientList';
+import PatientProfile from '../pages/Patients/PatientProfile';
 
 const AppRoutes = () => {
   return (

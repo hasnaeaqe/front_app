@@ -4,7 +4,6 @@ import DashboardLayout from '../../components/Layout/DashboardLayout';
 import Card from '../../components/UI/Card';
 import Button from '../../components/UI/Button';
 import Table from '../../components/UI/Table';
-import Badge from '../../components/UI/Badge';
 import Modal from '../../components/UI/Modal';
 import Input from '../../components/UI/Input';
 import patientService from '../../services/patientService';
@@ -71,6 +70,7 @@ const PatientList = () => {
   // Filter patients when search changes
   useEffect(() => {
     filterPatients();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchTerm, searchType, patients]);
 
   const fetchPatients = async () => {
