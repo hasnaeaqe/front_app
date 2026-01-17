@@ -103,7 +103,7 @@ public class OrdonnanceService {
                 om.getId(),
                 om.getMedicament().getNom(),
                 om.getPosologie(),
-                om.getMedicament().getForme(), // Using forme as frequence
+                om.getMedicament().getPosologie(), // Using medicament posologie as frequence
                 om.getDuree(),
                 null // instructions - not available in entity
             ))
