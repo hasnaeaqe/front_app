@@ -14,4 +14,14 @@ public interface RendezVousRepository extends JpaRepository<RendezVous, Long> {
     List<RendezVous> findByPatientIdOrderByDateRdvDesc(Long patientId);
     List<RendezVous> findByDateRdvBetween(LocalDate startDate, LocalDate endDate);
     List<RendezVous> findByStatut(RendezVous.Statut statut);
+    
+    /**
+     * Count rendez-vous for a specific date
+     */
+    Long countByDateRdv(LocalDate dateRdv);
+    
+    /**
+     * Find rendez-vous for today ordered by time
+     */
+    List<RendezVous> findByDateRdvOrderByHeureRdvAsc(LocalDate dateRdv);
 }

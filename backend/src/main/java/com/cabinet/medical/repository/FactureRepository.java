@@ -24,4 +24,17 @@ public interface FactureRepository extends JpaRepository<Facture, Long> {
            "WHERE c.medecin.id = :medecinId " +
            "AND DATE(f.dateEmission) = :date")
     Double sumRevenuByMedecinIdAndDate(@Param("medecinId") Long medecinId, @Param("date") LocalDate date);
+    
+    /**
+     * Count factures by statut paiement
+     */
+    Long countByStatutPaiement(Facture.StatutPaiement statut);
+    
+    /**
+     * Calculate total revenue for current month
+     */
+    @Query("SELECT COALESCE(SUM(f.montant), 0.0) FROM Facture f " +
+           "WHERE f.dateEmission BETWEEN :startDate AND :endDate " +
+           "AND f.statutPaiement = 'PAYE'")
+    Double sumRevenuByMonth(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 }
