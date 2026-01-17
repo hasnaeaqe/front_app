@@ -2,6 +2,7 @@ package com.cabinet.medical.service;
 
 import com.cabinet.medical.dto.MedecinStatsDTO;
 import com.cabinet.medical.repository.ConsultationRepository;
+import com.cabinet.medical.repository.FactureRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +17,7 @@ import java.time.LocalTime;
 public class MedecinStatistiquesService {
 
     private final ConsultationRepository consultationRepository;
+    private final FactureRepository factureRepository;
 
     /**
      * Calculer toutes les statistiques du dashboard médecin
@@ -35,9 +37,11 @@ public class MedecinStatistiquesService {
             .findByMedecinIdAndDateConsultationBetween(medecinId, startOfDay, endOfDay)
             .size();
         
-        // TODO: Calculer le revenu (nécessite une table facture liée)
-        // Pour l'instant, on retourne un calcul simple: nombre de consultations * prix moyen
-        Double revenuAujourdhui = consultationsAujourdhui * 200.0; // Prix moyen de 200 DH
+        // Calculer le revenu d'aujourd'hui depuis la table facture
+        Double revenuAujourdhui = factureRepository.sumRevenuByMedecinIdAndDate(medecinId, today);
+        if (revenuAujourdhui == null) {
+            revenuAujourdhui = 0.0;
+        }
         
         return new MedecinStatsDTO(patientsTotal, consultationsAujourdhui, consultationsEnCours, revenuAujourdhui);
     }
