@@ -48,11 +48,14 @@ cd front_app
 
 ```bash
 # Démarrer PostgreSQL
-sudo systemctl start postgresql  # Linux
-# ou brew services start postgresql@14  # macOS
+# Sous Windows, PostgreSQL s'exécute généralement comme un service
+net start postgresql-x64-16  # Adaptez le nom du service selon votre version
+# ou utilisez pgAdmin ou Services.msc
 
 # Se connecter à PostgreSQL
-sudo -u postgres psql
+psql -U postgres -h localhost
+# ou
+psql -U postgres
 
 # Créer la base de données
 CREATE DATABASE cabinet_medical;
